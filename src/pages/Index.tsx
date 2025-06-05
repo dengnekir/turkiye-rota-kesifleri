@@ -1,12 +1,47 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import { TurkeyMap } from '../components/TurkeyMap';
+import { PlacesList } from '../components/PlacesList';
+import { Header } from '../components/Header';
+import { SearchBar } from '../components/SearchBar';
 
 const Index = () => {
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-emerald-50">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-emerald-600 bg-clip-text text-transparent mb-4">
+            Türkiye Gezilecek Yerler
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Türkiye'nin güzel şehirlerini keşfedin, gezdiğiniz yerleri işaretleyin ve diğer gezginlerin önerilerini görün
+          </p>
+        </div>
+
+        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
+        <div className="grid lg:grid-cols-3 gap-8 mt-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Türkiye Haritası</h2>
+              <TurkeyMap selectedCity={selectedCity} onCitySelect={setSelectedCity} />
+            </div>
+          </div>
+          
+          <div className="lg:col-span-1">
+            <PlacesList 
+              selectedCity={selectedCity} 
+              searchQuery={searchQuery}
+              onCitySelect={setSelectedCity}
+            />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
