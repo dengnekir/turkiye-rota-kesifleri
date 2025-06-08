@@ -39,15 +39,15 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
   const [hoveredDistrict, setHoveredDistrict] = useState<string | null>(null);
-  const [showDistricts, setShowDistricts] = useState(false);
+  const [showOnlySelected, setShowOnlySelected] = useState(false);
 
   const handleProvinceClick = (province: Province) => {
-    if (selectedProvince?.id === province.id && showDistricts) {
-      setShowDistricts(false);
+    if (selectedProvince?.id === province.id && showOnlySelected) {
+      setShowOnlySelected(false);
       setSelectedProvince(null);
     } else {
       setSelectedProvince(province);
-      setShowDistricts(true);
+      setShowOnlySelected(true);
       onCitySelect(province.name);
     }
   };
@@ -59,11 +59,15 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
 
   const handleMapClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setShowDistricts(false);
+      setShowOnlySelected(false);
       setSelectedProvince(null);
       setHoveredDistrict(null);
     }
   };
+
+  const displayedProvinces = showOnlySelected && selectedProvince 
+    ? [selectedProvince] 
+    : turkeyProvinces;
 
   return (
     <TooltipProvider>
@@ -87,15 +91,15 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             </filter>
           </defs>
 
-          {/* İller - Gerçek konumlarında daireler */}
-          {turkeyProvinces.map((province) => (
+          {/* İller */}
+          {displayedProvinces.map((province) => (
             <g key={province.id}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <circle
                     cx={province.center.x}
                     cy={province.center.y}
-                    r={province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "12" : "8"}
+                    r={showOnlySelected ? "20" : (province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "12" : "8")}
                     fill={
                       selectedProvince?.id === province.id 
                         ? "#FFD700" 
@@ -127,8 +131,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
                     <div className="text-sm text-gray-600">Plaka: {province.plateCode}</div>
                     <div className="text-sm text-gray-600">{province.region} Bölgesi</div>
                     <div className="text-xs text-blue-600 mt-2 font-medium">
-                      {selectedProvince?.id === province.id && showDistricts 
-                        ? "Tıklayın → İlçeleri gizle"
+                      {selectedProvince?.id === province.id && showOnlySelected 
+                        ? "Tıklayın → Haritaya dön"
                         : "Tıklayın → İlçeleri görün"
                       }
                     </div>
@@ -143,7 +147,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
                 textAnchor="middle"
                 className="text-xs font-bold pointer-events-none"
                 fill="white"
-                style={{ fontSize: '7px' }}
+                style={{ fontSize: showOnlySelected ? '12px' : '7px' }}
               >
                 {province.plateCode}
               </text>
@@ -151,14 +155,14 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
               {/* İl İsmi */}
               <text
                 x={province.center.x}
-                y={province.center.y + 20}
+                y={province.center.y + (showOnlySelected ? 35 : 20)}
                 textAnchor="middle"
                 className={`text-xs font-semibold pointer-events-none transition-all duration-300`}
                 fill={
                   selectedProvince?.id === province.id ? '#B45309' : '#374151'
                 }
                 style={{
-                  fontSize: hoveredProvince === province.id ? '8px' : '7px',
+                  fontSize: showOnlySelected ? '14px' : (hoveredProvince === province.id ? '8px' : '7px'),
                   filter: 'drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.8))'
                 }}
               >
@@ -167,8 +171,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             </g>
           ))}
 
-          {/* İlçeler */}
-          {showDistricts && selectedProvince && (
+          {/* İlçeler - Sadece seçili il görünüyorsa göster */}
+          {showOnlySelected && selectedProvince && (
             <g className="animate-fade-in">
               {selectedProvince.districts.map((district, index) => (
                 <g 
@@ -184,7 +188,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
                       <circle
                         cx={district.center.x}
                         cy={district.center.y}
-                        r="5"
+                        r="6"
                         fill={
                           hoveredDistrict === district.id 
                             ? "#EC4899" 
@@ -219,14 +223,14 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
                   {/* İlçe İsmi */}
                   <text
                     x={district.center.x}
-                    y={district.center.y + 12}
+                    y={district.center.y + 15}
                     textAnchor="middle"
                     className={`text-xs font-medium pointer-events-none transition-all duration-200`}
                     fill={
                       hoveredDistrict === district.id ? '#BE185D' : '#BE185D'
                     }
                     style={{
-                      fontSize: hoveredDistrict === district.id ? '6px' : '5px',
+                      fontSize: hoveredDistrict === district.id ? '8px' : '6px',
                       filter: 'drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.9))'
                     }}
                   >
@@ -246,9 +250,9 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
           <div className="flex flex-col space-y-2 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-blue-400 rounded-full border border-blue-600"></div>
-              <span className="text-gray-700">81 İl</span>
+              <span className="text-gray-700">{showOnlySelected ? '1 İl' : '81 İl'}</span>
             </div>
-            {showDistricts && selectedProvince && (
+            {showOnlySelected && selectedProvince && (
               <div className="flex items-center space-y-1">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-pink-400 rounded-full border border-pink-600"></div>
@@ -283,10 +287,10 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             </div>
             
             <div className="text-sm text-gray-700 mb-3">
-              <strong>{selectedProvince.districts.length}</strong> ilçe {showDistricts ? 'gösteriliyor' : 'mevcut'}
+              <strong>{selectedProvince.districts.length}</strong> ilçe {showOnlySelected ? 'gösteriliyor' : 'mevcut'}
             </div>
             
-            {showDistricts && (
+            {showOnlySelected && (
               <div className="flex flex-wrap gap-1 mb-4 max-h-20 overflow-y-auto">
                 {selectedProvince.districts.slice(0, 8).map((district) => (
                   <span
@@ -307,7 +311,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             
             <button
               onClick={() => {
-                setShowDistricts(false);
+                setShowOnlySelected(false);
                 setSelectedProvince(null);
                 setHoveredDistrict(null);
               }}
@@ -318,40 +322,42 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
           </div>
         )}
 
-        {/* Bölge gösterge paneli */}
-        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
-          <div className="text-sm font-semibold text-gray-800 mb-2">Bölgeler</div>
-          <div className="space-y-1 text-xs">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3B82F6' }}></div>
-              <span>Marmara</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22C55E' }}></div>
-              <span>Ege</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FB923C' }}></div>
-              <span>Akdeniz</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EAB308' }}></div>
-              <span>İç Anadolu</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#14B8A6' }}></div>
-              <span>Karadeniz</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#A855F7' }}></div>
-              <span>Doğu Anadolu</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EF4444' }}></div>
-              <span>Güneydoğu Anadolu</span>
+        {/* Bölge gösterge paneli - Sadece tüm harita gösteriliyorsa */}
+        {!showOnlySelected && (
+          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
+            <div className="text-sm font-semibold text-gray-800 mb-2">Bölgeler</div>
+            <div className="space-y-1 text-xs">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3B82F6' }}></div>
+                <span>Marmara</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22C55E' }}></div>
+                <span>Ege</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FB923C' }}></div>
+                <span>Akdeniz</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EAB308' }}></div>
+                <span>İç Anadolu</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#14B8A6' }}></div>
+                <span>Karadeniz</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#A855F7' }}></div>
+                <span>Doğu Anadolu</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EF4444' }}></div>
+                <span>Güneydoğu Anadolu</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </TooltipProvider>
   );
