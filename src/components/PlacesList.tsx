@@ -22,9 +22,9 @@ interface PlacesListProps {
 }
 
 const mockPlaces: Place[] = [
-  // Mardin Tarihi Yerleri
+  // Mardin Artuklu İlçesi
   {
-    id: 'mardin-1',
+    id: 'mardin-artuklu-1',
     name: 'Mardin Kalesi',
     city: 'Mardin',
     district: 'Artuklu',
@@ -36,7 +36,7 @@ const mockPlaces: Place[] = [
     visitDuration: '2-3 saat'
   },
   {
-    id: 'mardin-2',
+    id: 'mardin-artuklu-2',
     name: 'Deyrü\'z-Zafaran Manastırı',
     city: 'Mardin',
     district: 'Artuklu',
@@ -48,7 +48,7 @@ const mockPlaces: Place[] = [
     visitDuration: '1-2 saat'
   },
   {
-    id: 'mardin-3',
+    id: 'mardin-artuklu-3',
     name: 'Kasımiye Medresesi',
     city: 'Mardin',
     district: 'Artuklu',
@@ -60,7 +60,7 @@ const mockPlaces: Place[] = [
     visitDuration: '1 saat'
   },
   {
-    id: 'mardin-4',
+    id: 'mardin-artuklu-4',
     name: 'Mardin Ulu Camii',
     city: 'Mardin',
     district: 'Artuklu',
@@ -72,7 +72,7 @@ const mockPlaces: Place[] = [
     visitDuration: '45 dakika'
   },
   {
-    id: 'mardin-5',
+    id: 'mardin-artuklu-5',
     name: 'Zinciriye Medresesi',
     city: 'Mardin',
     district: 'Artuklu',
@@ -84,7 +84,7 @@ const mockPlaces: Place[] = [
     visitDuration: '1 saat'
   },
   {
-    id: 'mardin-6',
+    id: 'mardin-artuklu-6',
     name: 'Latifiye Camii',
     city: 'Mardin',
     district: 'Artuklu',
@@ -96,7 +96,7 @@ const mockPlaces: Place[] = [
     visitDuration: '30 dakika'
   },
   {
-    id: 'mardin-7',
+    id: 'mardin-artuklu-7',
     name: 'Şehidiye Camii ve Külliyesi',
     city: 'Mardin',
     district: 'Artuklu',
@@ -108,7 +108,7 @@ const mockPlaces: Place[] = [
     visitDuration: '1-2 saat'
   },
   {
-    id: 'mardin-8',
+    id: 'mardin-artuklu-8',
     name: 'Forty Martyrs Kilisesi',
     city: 'Mardin',
     district: 'Artuklu',
@@ -120,7 +120,7 @@ const mockPlaces: Place[] = [
     visitDuration: '45 dakika'
   },
   {
-    id: 'mardin-9',
+    id: 'mardin-artuklu-9',
     name: 'Mardin Müzesi',
     city: 'Mardin',
     district: 'Artuklu',
@@ -132,7 +132,7 @@ const mockPlaces: Place[] = [
     visitDuration: '1-2 saat'
   },
   {
-    id: 'mardin-10',
+    id: 'mardin-artuklu-10',
     name: 'Revaklı Çarşı',
     city: 'Mardin',
     district: 'Artuklu',
@@ -144,7 +144,7 @@ const mockPlaces: Place[] = [
     visitDuration: '1 saat'
   },
   {
-    id: 'mardin-11',
+    id: 'mardin-artuklu-11',
     name: 'Savurkapı',
     city: 'Mardin',
     district: 'Artuklu',
@@ -156,31 +156,7 @@ const mockPlaces: Place[] = [
     visitDuration: '20 dakika'
   },
   {
-    id: 'mardin-12',
-    name: 'Midyat Mor Gabriel Manastırı',
-    city: 'Mardin',
-    district: 'Midyat',
-    rating: 4.9,
-    image: '/placeholder.svg',
-    description: 'Dünyanın en eski faal manastırlarından, Süryani merkezi',
-    tags: ['Tarihi', 'Manastır', 'Süryani'],
-    historicalPeriod: 'MS 397',
-    visitDuration: '2-3 saat'
-  },
-  {
-    id: 'mardin-13',
-    name: 'Midyat Eski Şehir',
-    city: 'Mardin',
-    district: 'Midyat',
-    rating: 4.7,
-    image: '/placeholder.svg',
-    description: 'Taş evler ve dar sokaklar, geleneksel mimari',
-    tags: ['Tarihi', 'Şehir', 'Mimari'],
-    historicalPeriod: 'Çeşitli dönemler',
-    visitDuration: '2-4 saat'
-  },
-  {
-    id: 'mardin-14',
+    id: 'mardin-artuklu-12',
     name: 'Dara Antik Kenti',
     city: 'Mardin',
     district: 'Artuklu',
@@ -192,16 +168,242 @@ const mockPlaces: Place[] = [
     visitDuration: '2-3 saat'
   },
   {
-    id: 'mardin-15',
-    name: 'Nusaybin Zeynel Abidin Camii',
+    id: 'mardin-artuklu-13',
+    name: 'Eski Gümrük Hanı',
+    city: 'Mardin',
+    district: 'Artuklu',
+    rating: 4.3,
+    image: '/placeholder.svg',
+    description: 'Osmanlı döneminden kalma tarihi han',
+    tags: ['Tarihi', 'Han', 'Osmanlı'],
+    historicalPeriod: 'Osmanlı Dönemi',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'mardin-artuklu-14',
+    name: 'Süleymaniye Camii',
+    city: 'Mardin',
+    district: 'Artuklu',
+    rating: 4.4,
+    image: '/placeholder.svg',
+    description: 'Osmanlı mimarisinin güzel örneklerinden',
+    tags: ['Tarihi', 'Cami', 'Osmanlı'],
+    historicalPeriod: 'Osmanlı Dönemi',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'mardin-artuklu-15',
+    name: 'Cercis Murat Konağı',
+    city: 'Mardin',
+    district: 'Artuklu',
+    rating: 4.6,
+    image: '/placeholder.svg',
+    description: 'Sakıp Sabancı Mardin Kent Müzesi',
+    tags: ['Müze', 'Konağı', 'Kültür'],
+    historicalPeriod: '19. yüzyıl',
+    visitDuration: '1-2 saat'
+  },
+
+  // Mardin Midyat İlçesi
+  {
+    id: 'mardin-midyat-1',
+    name: 'Mor Gabriel Manastırı',
+    city: 'Mardin',
+    district: 'Midyat',
+    rating: 4.9,
+    image: '/placeholder.svg',
+    description: 'Dünyanın en eski faal manastırlarından, Süryani merkezi',
+    tags: ['Tarihi', 'Manastır', 'Süryani'],
+    historicalPeriod: 'MS 397',
+    visitDuration: '2-3 saat'
+  },
+  {
+    id: 'mardin-midyat-2',
+    name: 'Midyat Eski Şehir',
+    city: 'Mardin',
+    district: 'Midyat',
+    rating: 4.7,
+    image: '/placeholder.svg',
+    description: 'Taş evler ve dar sokaklar, geleneksel mimari',
+    tags: ['Tarihi', 'Şehir', 'Mimari'],
+    historicalPeriod: 'Çeşitli dönemler',
+    visitDuration: '2-4 saat'
+  },
+  {
+    id: 'mardin-midyat-3',
+    name: 'Mor Hobil Manastırı',
+    city: 'Mardin',
+    district: 'Midyat',
+    rating: 4.5,
+    image: '/placeholder.svg',
+    description: 'Süryani Katolik Kilisesi',
+    tags: ['Tarihi', 'Manastır', 'Süryani'],
+    historicalPeriod: '19. yüzyıl',
+    visitDuration: '1 saat'
+  },
+  {
+    id: 'mardin-midyat-4',
+    name: 'Midyat Gümüş ve Telkari Müzesi',
+    city: 'Mardin',
+    district: 'Midyat',
+    rating: 4.4,
+    image: '/placeholder.svg',
+    description: 'Geleneksel gümüş işçiliği ve telkari sanatı',
+    tags: ['Müze', 'Sanat', 'El Sanatları'],
+    historicalPeriod: 'Geleneksel',
+    visitDuration: '1 saat'
+  },
+  {
+    id: 'mardin-midyat-5',
+    name: 'Mor Yakup Kilisesi',
+    city: 'Mardin',
+    district: 'Midyat',
+    rating: 4.3,
+    image: '/placeholder.svg',
+    description: 'Süryani Ortodoks kilisesi, tarihi ibadet yeri',
+    tags: ['Tarihi', 'Kilise', 'Süryani'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '45 dakika'
+  },
+  {
+    id: 'mardin-midyat-6',
+    name: 'Estel Winery',
+    city: 'Mardin',
+    district: 'Midyat',
+    rating: 4.6,
+    image: '/placeholder.svg',
+    description: 'Süryani geleneğiyle üretilen şaraplar',
+    tags: ['Şarap', 'Gelenek', 'Turizm'],
+    historicalPeriod: 'Modern',
+    visitDuration: '1-2 saat'
+  },
+
+  // Mardin Nusaybin İlçesi
+  {
+    id: 'mardin-nusaybin-1',
+    name: 'Mor Yakup Kilisesi (Nusaybin)',
     city: 'Mardin',
     district: 'Nusaybin',
     rating: 4.4,
     image: '/placeholder.svg',
     description: 'Türk-İslam mimarisinin güzel örneklerinden',
-    tags: ['Tarihi', 'Cami', 'İslami'],
+    tags: ['Tarihi', 'Kilise', 'İslami'],
     historicalPeriod: 'Ortaçağ',
     visitDuration: '45 dakika'
+  },
+  {
+    id: 'mardin-nusaybin-2',
+    name: 'Zeynel Abidin Camii',
+    city: 'Mardin',
+    district: 'Nusaybin',
+    rating: 4.3,
+    image: '/placeholder.svg',
+    description: 'İslami mimarinin önemli eseri',
+    tags: ['Tarihi', 'Cami', 'İslami'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'mardin-nusaybin-3',
+    name: 'Nusaybin Ulu Camii',
+    city: 'Mardin',
+    district: 'Nusaybin',
+    rating: 4.2,
+    image: '/placeholder.svg',
+    description: 'Şehrin en eski camisi',
+    tags: ['Tarihi', 'Cami', 'İslami'],
+    historicalPeriod: 'Erken İslam Dönemi',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'mardin-nusaybin-4',
+    name: 'Nusaybin Kalesi',
+    city: 'Mardin',
+    district: 'Nusaybin',
+    rating: 4.1,
+    image: '/placeholder.svg',
+    description: 'Antik dönemden kalma kale kalıntıları',
+    tags: ['Tarihi', 'Kale', 'Antik'],
+    historicalPeriod: 'Antik dönem',
+    visitDuration: '1 saat'
+  },
+
+  // Mardin Mazıdağı İlçesi
+  {
+    id: 'mardin-mazidagi-1',
+    name: 'Mazıdağı Kalesi',
+    city: 'Mardin',
+    district: 'Mazıdağı',
+    rating: 4.0,
+    image: '/placeholder.svg',
+    description: 'Tarihi kale kalıntıları ve manzara',
+    tags: ['Tarihi', 'Kale', 'Manzara'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '1-2 saat'
+  },
+  {
+    id: 'mardin-mazidagi-2',
+    name: 'Mazıdağı Camii',
+    city: 'Mardin',
+    district: 'Mazıdağı',
+    rating: 3.9,
+    image: '/placeholder.svg',
+    description: 'Yerel mimarinin güzel örneği',
+    tags: ['Tarihi', 'Cami', 'Yerel'],
+    historicalPeriod: 'Osmanlı Dönemi',
+    visitDuration: '30 dakika'
+  },
+
+  // Mardin Savur İlçesi
+  {
+    id: 'mardin-savur-1',
+    name: 'Savur Kalesi',
+    city: 'Mardin',
+    district: 'Savur',
+    rating: 4.2,
+    image: '/placeholder.svg',
+    description: 'Tarihi kale ve panoramik manzara',
+    tags: ['Tarihi', 'Kale', 'Manzara'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '1-2 saat'
+  },
+  {
+    id: 'mardin-savur-2',
+    name: 'Savur Eski Evleri',
+    city: 'Mardin',
+    district: 'Savur',
+    rating: 4.1,
+    image: '/placeholder.svg',
+    description: 'Geleneksel taş mimari örnekleri',
+    tags: ['Tarihi', 'Mimari', 'Geleneksel'],
+    historicalPeriod: 'Çeşitli dönemler',
+    visitDuration: '1-2 saat'
+  },
+
+  // Mardin Kızıltepe İlçesi
+  {
+    id: 'mardin-kiziltepe-1',
+    name: 'Kızıltepe Ulu Camii',
+    city: 'Mardin',
+    district: 'Kızıltepe',
+    rating: 4.0,
+    image: '/placeholder.svg',
+    description: 'Şehrin merkezi camisi',
+    tags: ['Tarihi', 'Cami', 'İslami'],
+    historicalPeriod: 'Osmanlı Dönemi',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'mardin-kiziltepe-2',
+    name: 'Kızıltepe Pazarı',
+    city: 'Mardin',
+    district: 'Kızıltepe',
+    rating: 3.9,
+    image: '/placeholder.svg',
+    description: 'Geleneksel halk pazarı',
+    tags: ['Kültür', 'Pazar', 'Yerel'],
+    historicalPeriod: 'Geleneksel',
+    visitDuration: '1 saat'
   },
 
   // Diğer şehirlerden örnekler
