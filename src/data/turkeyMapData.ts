@@ -1,4 +1,3 @@
-
 export interface District {
   id: string;
   name: string;
@@ -16,19 +15,52 @@ export interface Province {
 
 // Türkiye'nin gerçek coğrafi konumlarına göre basit polygon koordinatları
 export const turkeyProvinces: Province[] = [
-  // Marmara Bölgesi
+  // Marmara Bölgesi - Konumlar yeniden düzenlendi
   {
     id: "istanbul",
     name: "İstanbul",
     plateCode: 34,
     region: "Marmara",
-    center: { x: 170, y: 120 },
+    center: { x: 180, y: 120 },
     districts: [
-      { id: "fatih", name: "Fatih", center: { x: 165, y: 118 } },
-      { id: "kadikoy", name: "Kadıköy", center: { x: 175, y: 122 } },
-      { id: "beyoglu", name: "Beyoğlu", center: { x: 168, y: 115 } },
-      { id: "uskudar", name: "Üsküdar", center: { x: 172, y: 119 } },
-      { id: "besiktas", name: "Beşiktaş", center: { x: 166, y: 120 } }
+      { id: "adalar", name: "Adalar", center: { x: 190, y: 125 } },
+      { id: "arnavutkoy", name: "Arnavutköy", center: { x: 175, y: 110 } },
+      { id: "atasehir", name: "Ataşehir", center: { x: 185, y: 125 } },
+      { id: "avcilar", name: "Avcılar", center: { x: 170, y: 125 } },
+      { id: "bagcilar", name: "Bağcılar", center: { x: 172, y: 120 } },
+      { id: "bahcelievler", name: "Bahçelievler", center: { x: 173, y: 122 } },
+      { id: "bakirkoy", name: "Bakırköy", center: { x: 171, y: 123 } },
+      { id: "basaksehir", name: "Başakşehir", center: { x: 175, y: 115 } },
+      { id: "bayrampasa", name: "Bayrampaşa", center: { x: 174, y: 118 } },
+      { id: "besiktas", name: "Beşiktaş", center: { x: 176, y: 118 } },
+      { id: "beykoz", name: "Beykoz", center: { x: 182, y: 115 } },
+      { id: "beylikduzu", name: "Beylikdüzü", center: { x: 168, y: 126 } },
+      { id: "beyoglu", name: "Beyoğlu", center: { x: 177, y: 117 } },
+      { id: "buyukcekmece", name: "Büyükçekmece", center: { x: 165, y: 125 } },
+      { id: "catalca", name: "Çatalca", center: { x: 160, y: 115 } },
+      { id: "cekmece", name: "Çekmeköy", center: { x: 185, y: 118 } },
+      { id: "esenler", name: "Esenler", center: { x: 173, y: 119 } },
+      { id: "esenyurt", name: "Esenyurt", center: { x: 169, y: 124 } },
+      { id: "eyupsultan", name: "Eyüpsultan", center: { x: 176, y: 115 } },
+      { id: "fatih", name: "Fatih", center: { x: 177, y: 119 } },
+      { id: "gaziosmanpasa", name: "Gaziosmanpaşa", center: { x: 175, y: 117 } },
+      { id: "gungoren", name: "Güngören", center: { x: 172, y: 121 } },
+      { id: "kadikoy", name: "Kadıköy", center: { x: 180, y: 122 } },
+      { id: "kagithane", name: "Kağıthane", center: { x: 176, y: 117 } },
+      { id: "kartal", name: "Kartal", center: { x: 183, y: 124 } },
+      { id: "kucukcekmece", name: "Küçükçekmece", center: { x: 170, y: 124 } },
+      { id: "maltepe", name: "Maltepe", center: { x: 182, y: 123 } },
+      { id: "pendik", name: "Pendik", center: { x: 184, y: 125 } },
+      { id: "sancaktepe", name: "Sancaktepe", center: { x: 186, y: 120 } },
+      { id: "sariyer", name: "Sarıyer", center: { x: 178, y: 114 } },
+      { id: "silivri", name: "Silivri", center: { x: 158, y: 122 } },
+      { id: "sisli", name: "Şişli", center: { x: 176, y: 118 } },
+      { id: "sultangazi", name: "Sultangazi", center: { x: 174, y: 116 } },
+      { id: "sultanbeyli", name: "Sultanbeyli", center: { x: 187, y: 122 } },
+      { id: "tuzla", name: "Tuzla", center: { x: 185, y: 126 } },
+      { id: "umraniye", name: "Ümraniye", center: { x: 184, y: 119 } },
+      { id: "uskudar", name: "Üsküdar", center: { x: 180, y: 121 } },
+      { id: "zeytinburnu", name: "Zeytinburnu", center: { x: 174, y: 121 } }
     ]
   },
   {
@@ -39,7 +71,14 @@ export const turkeyProvinces: Province[] = [
     center: { x: 120, y: 100 },
     districts: [
       { id: "merkez-edirne", name: "Merkez", center: { x: 120, y: 100 } },
-      { id: "ipsala", name: "İpsala", center: { x: 115, y: 105 } }
+      { id: "enez", name: "Enez", center: { x: 115, y: 105 } },
+      { id: "havsa", name: "Havsa", center: { x: 125, y: 95 } },
+      { id: "ipsala", name: "İpsala", center: { x: 115, y: 102 } },
+      { id: "kesan", name: "Keşan", center: { x: 125, y: 105 } },
+      { id: "lalapasa", name: "Lalapaşa", center: { x: 118, y: 95 } },
+      { id: "meric", name: "Meriç", center: { x: 122, y: 98 } },
+      { id: "suloglu", name: "Süloğlu", center: { x: 125, y: 100 } },
+      { id: "uzunkopru", name: "Uzunköprü", center: { x: 120, y: 105 } }
     ]
   },
   {
@@ -47,10 +86,16 @@ export const turkeyProvinces: Province[] = [
     name: "Kırklareli",
     plateCode: 39,
     region: "Marmara",
-    center: { x: 140, y: 105 },
+    center: { x: 140, y: 95 },
     districts: [
-      { id: "merkez-kirklareli", name: "Merkez", center: { x: 140, y: 105 } },
-      { id: "luleburgaz", name: "Lüleburgaz", center: { x: 145, y: 110 } }
+      { id: "merkez-kirklareli", name: "Merkez", center: { x: 140, y: 95 } },
+      { id: "babaeski", name: "Babaeski", center: { x: 145, y: 100 } },
+      { id: "demirkoy", name: "Demirköy", center: { x: 135, y: 90 } },
+      { id: "kofcaz", name: "Kofçaz", center: { x: 142, y: 88 } },
+      { id: "luleburgaz", name: "Lüleburgaz", center: { x: 145, y: 98 } },
+      { id: "pehlivankoy", name: "Pehlivanköy", center: { x: 148, y: 95 } },
+      { id: "pinarhisar", name: "Pınarhisar", center: { x: 138, y: 92 } },
+      { id: "vize", name: "Vize", center: { x: 142, y: 92 } }
     ]
   },
   {
@@ -58,10 +103,19 @@ export const turkeyProvinces: Province[] = [
     name: "Tekirdağ",
     plateCode: 59,
     region: "Marmara",
-    center: { x: 150, y: 115 },
+    center: { x: 155, y: 115 },
     districts: [
-      { id: "suleymanpasa", name: "Süleymanpaşa", center: { x: 150, y: 115 } },
-      { id: "corlu", name: "Çorlu", center: { x: 155, y: 120 } }
+      { id: "suleymanpasa", name: "Süleymanpaşa", center: { x: 155, y: 115 } },
+      { id: "cerkezkoy", name: "Çerkezköy", center: { x: 160, y: 118 } },
+      { id: "corlu", name: "Çorlu", center: { x: 158, y: 120 } },
+      { id: "hayrabolu", name: "Hayrabolu", center: { x: 152, y: 118 } },
+      { id: "kapakli", name: "Kapaklı", center: { x: 159, y: 116 } },
+      { id: "malkara", name: "Malkara", center: { x: 150, y: 120 } },
+      { id: "marmaraereglisi", name: "Marmara Ereğlisi", center: { x: 157, y: 112 } },
+      { id: "muratli", name: "Muratlı", center: { x: 155, y: 122 } },
+      { id: "saray", name: "Saray", center: { x: 153, y: 115 } },
+      { id: "sarkoy", name: "Şarköy", center: { x: 148, y: 122 } },
+      { id: "ergene", name: "Ergene", center: { x: 161, y: 120 } }
     ]
   },
   {
@@ -69,10 +123,20 @@ export const turkeyProvinces: Province[] = [
     name: "Kocaeli",
     plateCode: 41,
     region: "Marmara",
-    center: { x: 180, y: 125 },
+    center: { x: 200, y: 125 },
     districts: [
-      { id: "izmit", name: "İzmit", center: { x: 180, y: 125 } },
-      { id: "gebze", name: "Gebze", center: { x: 175, y: 130 } }
+      { id: "izmit", name: "İzmit", center: { x: 200, y: 125 } },
+      { id: "basiskele", name: "Başiskele", center: { x: 202, y: 128 } },
+      { id: "cayirova", name: "Çayırova", center: { x: 198, y: 128 } },
+      { id: "darica", name: "Darıca", center: { x: 195, y: 130 } },
+      { id: "derince", name: "Derince", center: { x: 198, y: 127 } },
+      { id: "dilovasi", name: "Dilovası", center: { x: 197, y: 132 } },
+      { id: "gebze", name: "Gebze", center: { x: 195, y: 128 } },
+      { id: "golcuk", name: "Gölcük", center: { x: 203, y: 127 } },
+      { id: "kandira", name: "Kandıra", center: { x: 205, y: 122 } },
+      { id: "karamursel", name: "Karamürsel", center: { x: 202, y: 125 } },
+      { id: "kartepe", name: "Kartepe", center: { x: 200, y: 130 } },
+      { id: "korfez", name: "Körfez", center: { x: 199, y: 127 } }
     ]
   },
   {
@@ -80,10 +144,24 @@ export const turkeyProvinces: Province[] = [
     name: "Sakarya",
     plateCode: 54,
     region: "Marmara",
-    center: { x: 190, y: 135 },
+    center: { x: 220, y: 135 },
     districts: [
-      { id: "adapazari", name: "Adapazarı", center: { x: 190, y: 135 } },
-      { id: "serdivan", name: "Serdivan", center: { x: 195, y: 140 } }
+      { id: "adapazari", name: "Adapazarı", center: { x: 220, y: 135 } },
+      { id: "akyazi", name: "Akyazı", center: { x: 225, y: 138 } },
+      { id: "arifiye", name: "Arifiye", center: { x: 222, y: 133 } },
+      { id: "erenler", name: "Erenler", center: { x: 218, y: 137 } },
+      { id: "ferizli", name: "Ferizli", center: { x: 227, y: 140 } },
+      { id: "geyve", name: "Geyve", center: { x: 215, y: 140 } },
+      { id: "hendek", name: "Hendek", center: { x: 225, y: 135 } },
+      { id: "karapurcek", name: "Karapürçek", center: { x: 217, y: 140 } },
+      { id: "karasu", name: "Karasu", center: { x: 230, y: 132 } },
+      { id: "kaynarca", name: "Kaynarca", center: { x: 228, y: 130 } },
+      { id: "kocaali", name: "Kocaali", center: { x: 232, y: 135 } },
+      { id: "pamukova", name: "Pamukova", center: { x: 213, y: 138 } },
+      { id: "sapanca", name: "Sapanca", center: { x: 218, y: 135 } },
+      { id: "serdivan", name: "Serdivan", center: { x: 220, y: 138 } },
+      { id: "sogutlu", name: "Söğütlü", center: { x: 223, y: 140 } },
+      { id: "tarakli", name: "Taraklı", center: { x: 210, y: 142 } }
     ]
   },
   {
@@ -91,10 +169,14 @@ export const turkeyProvinces: Province[] = [
     name: "Yalova",
     plateCode: 77,
     region: "Marmara",
-    center: { x: 170, y: 135 },
+    center: { x: 185, y: 135 },
     districts: [
-      { id: "merkez-yalova", name: "Merkez", center: { x: 170, y: 135 } },
-      { id: "cinarcik", name: "Çınarcık", center: { x: 175, y: 140 } }
+      { id: "merkez-yalova", name: "Merkez", center: { x: 185, y: 135 } },
+      { id: "altinova", name: "Altınova", center: { x: 188, y: 138 } },
+      { id: "armutlu", name: "Armutlu", center: { x: 182, y: 140 } },
+      { id: "cinarcik", name: "Çınarcık", center: { x: 187, y: 132 } },
+      { id: "ciftlikkoy", name: "Çiftlikköy", center: { x: 183, y: 137 } },
+      { id: "termal", name: "Termal", center: { x: 180, y: 138 } }
     ]
   },
   {
@@ -102,11 +184,25 @@ export const turkeyProvinces: Province[] = [
     name: "Bursa",
     plateCode: 16,
     region: "Marmara",
-    center: { x: 160, y: 145 },
+    center: { x: 170, y: 155 },
     districts: [
-      { id: "osmangazi", name: "Osmangazi", center: { x: 160, y: 145 } },
-      { id: "nilufer", name: "Nilüfer", center: { x: 165, y: 150 } },
-      { id: "yildirim", name: "Yıldırım", center: { x: 155, y: 150 } }
+      { id: "osmangazi", name: "Osmangazi", center: { x: 170, y: 155 } },
+      { id: "nilufer", name: "Nilüfer", center: { x: 167, y: 157 } },
+      { id: "yildirim", name: "Yıldırım", center: { x: 173, y: 157 } },
+      { id: "buyukorhan", name: "Büyükorhan", center: { x: 180, y: 160 } },
+      { id: "gemlik", name: "Gemlik", center: { x: 165, y: 160 } },
+      { id: "gursu", name: "Gürsu", center: { x: 172, y: 160 } },
+      { id: "harmancik", name: "Harmancık", center: { x: 175, y: 165 } },
+      { id: "inegol", name: "İnegöl", center: { x: 180, y: 155 } },
+      { id: "iznik", name: "İznik", center: { x: 175, y: 150 } },
+      { id: "karacabey", name: "Karacabey", center: { x: 160, y: 158 } },
+      { id: "keles", name: "Keles", center: { x: 178, y: 162 } },
+      { id: "kestel", name: "Kestel", center: { x: 175, y: 157 } },
+      { id: "mudanya", name: "Mudanya", center: { x: 162, y: 155 } },
+      { id: "mustafakemalpasa", name: "Mustafakemalpaşa", center: { x: 165, y: 165 } },
+      { id: "orhaneli", name: "Orhaneli", center: { x: 182, y: 165 } },
+      { id: "orhangazi", name: "Orhangazi", center: { x: 168, y: 152 } },
+      { id: "yenisehir-bursa", name: "Yenişehir", center: { x: 175, y: 162 } }
     ]
   },
   {
@@ -114,10 +210,16 @@ export const turkeyProvinces: Province[] = [
     name: "Bilecik",
     plateCode: 11,
     region: "Marmara",
-    center: { x: 180, y: 155 },
+    center: { x: 200, y: 165 },
     districts: [
-      { id: "merkez-bilecik", name: "Merkez", center: { x: 180, y: 155 } },
-      { id: "bozuyuk", name: "Bozüyük", center: { x: 185, y: 160 } }
+      { id: "merkez-bilecik", name: "Merkez", center: { x: 200, y: 165 } },
+      { id: "bozuyuk", name: "Bozüyük", center: { x: 205, y: 168 } },
+      { id: "golpazari", name: "Gölpazarı", center: { x: 195, y: 162 } },
+      { id: "inhisar", name: "İnhisar", center: { x: 202, y: 162 } },
+      { id: "osmaneli", name: "Osmaneli", center: { x: 197, y: 168 } },
+      { id: "pazaryeri", name: "Pazaryeri", center: { x: 205, y: 162 } },
+      { id: "sogut", name: "Söğüt", center: { x: 192, y: 165 } },
+      { id: "yenipazar", name: "Yenipazar", center: { x: 198, y: 160 } }
     ]
   },
   {
@@ -125,10 +227,20 @@ export const turkeyProvinces: Province[] = [
     name: "Çanakkale",
     plateCode: 17,
     region: "Marmara",
-    center: { x: 130, y: 140 },
+    center: { x: 125, y: 140 },
     districts: [
-      { id: "merkez-canakkale", name: "Merkez", center: { x: 130, y: 140 } },
-      { id: "biga", name: "Biga", center: { x: 135, y: 135 } }
+      { id: "merkez-canakkale", name: "Merkez", center: { x: 125, y: 140 } },
+      { id: "ayvacik", name: "Ayvacık", center: { x: 115, y: 135 } },
+      { id: "bayramich", name: "Bayramiç", center: { x: 130, y: 145 } },
+      { id: "biga", name: "Biga", center: { x: 135, y: 135 } },
+      { id: "bozcaada", name: "Bozcaada", center: { x: 110, y: 140 } },
+      { id: "cekinme", name: "Çan", center: { x: 135, y: 150 } },
+      { id: "eceabat", name: "Eceabat", center: { x: 120, y: 138 } },
+      { id: "ezine", name: "Ezine", center: { x: 118, y: 142 } },
+      { id: "gelibolu", name: "Gelibolu", center: { x: 128, y: 135 } },
+      { id: "gokceada", name: "Gökçeada", center: { x: 110, y: 145 } },
+      { id: "lapseki", name: "Lapseki", center: { x: 132, y: 138 } },
+      { id: "yenice", name: "Yenice", center: { x: 140, y: 148 } }
     ]
   },
   {
@@ -136,10 +248,27 @@ export const turkeyProvinces: Province[] = [
     name: "Balıkesir",
     plateCode: 10,
     region: "Marmara",
-    center: { x: 150, y: 160 },
+    center: { x: 150, y: 175 },
     districts: [
-      { id: "altieylul", name: "Altıeylül", center: { x: 150, y: 160 } },
-      { id: "karesi", name: "Karesi", center: { x: 155, y: 165 } }
+      { id: "altieylul", name: "Altıeylül", center: { x: 150, y: 175 } },
+      { id: "karesi", name: "Karesi", center: { x: 153, y: 178 } },
+      { id: "ayvalik", name: "Ayvalık", center: { x: 140, y: 182 } },
+      { id: "balya", name: "Balya", center: { x: 155, y: 170 } },
+      { id: "bandirma", name: "Bandırma", center: { x: 145, y: 170 } },
+      { id: "bigadic", name: "Bigadiç", center: { x: 160, y: 180 } },
+      { id: "burhaniye", name: "Burhaniye", center: { x: 143, y: 180 } },
+      { id: "dursunbey", name: "Dursunbey", center: { x: 165, y: 175 } },
+      { id: "edremit", name: "Edremit", center: { x: 138, y: 178 } },
+      { id: "erdek", name: "Erdek", center: { x: 142, y: 168 } },
+      { id: "gonen", name: "Gönen", center: { x: 148, y: 165 } },
+      { id: "havran", name: "Havran", center: { x: 145, y: 185 } },
+      { id: "ivrindi", name: "İvrindi", center: { x: 155, y: 185 } },
+      { id: "kepsut", name: "Kepsut", center: { x: 158, y: 175 } },
+      { id: "manyas", name: "Manyas", center: { x: 152, y: 168 } },
+      { id: "marmara", name: "Marmara", center: { x: 135, y: 165 } },
+      { id: "savastepe", name: "Savaştepe", center: { x: 148, y: 182 } },
+      { id: "sindirgi", name: "Sındırgı", center: { x: 162, y: 172 } },
+      { id: "susurluk", name: "Susurluk", center: { x: 155, y: 165 } }
     ]
   },
 

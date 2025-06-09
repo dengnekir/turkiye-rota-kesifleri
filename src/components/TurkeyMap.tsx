@@ -39,15 +39,16 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
   const [hoveredDistrict, setHoveredDistrict] = useState<string | null>(null);
-  const [showDistricts, setShowDistricts] = useState(false);
 
   const handleProvinceClick = (province: Province) => {
-    if (selectedProvince?.id === province.id && showDistricts) {
-      setShowDistricts(false);
+    if (selectedProvince?.id === province.id) {
+      // Aynı ile tekrar tıklanırsa haritayı normale döndür
       setSelectedProvince(null);
+      setHoveredDistrict(null);
+      onCitySelect(province.name);
     } else {
+      // Yeni il seçildi - sadece o ili göster
       setSelectedProvince(province);
-      setShowDistricts(true);
       onCitySelect(province.name);
     }
   };
@@ -59,11 +60,13 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
 
   const handleMapClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setShowDistricts(false);
       setSelectedProvince(null);
       setHoveredDistrict(null);
     }
   };
+
+  // Eğer bir il seçiliyse, sadece o ili ve ilçeleri göster
+  const provincesToShow = selectedProvince ? [selectedProvince] : turkeyProvinces;
 
   return (
     <TooltipProvider>
@@ -87,27 +90,24 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             </filter>
           </defs>
 
-          {/* İller - Gerçek konumlarında daireler */}
-          {turkeyProvinces.map((province) => (
+          {/* İller - Seçilen il varsa sadece o, yoksa tümü */}
+          {provincesToShow.map((province) => (
             <g key={province.id}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <circle
-                    cx={province.center.x}
-                    cy={province.center.y}
-                    r={province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "12" : "8"}
+                    cx={selectedProvince ? 260 : province.center.x}
+                    cy={selectedProvince ? 160 : province.center.y}
+                    r={selectedProvince ? "20" : (province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "12" : "8")}
                     fill={
-                      selectedProvince?.id === province.id 
+                      selectedProvince 
                         ? "#FFD700" 
                         : hoveredProvince === province.id 
                           ? getRegionHoverColor(province.region)
                           : getRegionColor(province.region)
                     }
                     stroke="#FFFFFF"
-                    strokeWidth={
-                      selectedProvince?.id === province.id ? "3" :
-                      hoveredProvince === province.id ? "2" : "1"
-                    }
+                    strokeWidth={selectedProvince ? "4" : hoveredProvince === province.id ? "2" : "1"}
                     className="cursor-pointer transition-all duration-300"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -116,7 +116,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
                     onMouseEnter={() => setHoveredProvince(province.id)}
                     onMouseLeave={() => setHoveredProvince(null)}
                     style={{
-                      filter: selectedProvince?.id === province.id ? 'url(#glow)' : 'url(#shadow)',
+                      filter: selectedProvince ? 'url(#glow)' : 'url(#shadow)',
                       transition: 'all 0.3s ease'
                     }}
                   />
@@ -127,8 +127,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
                     <div className="text-sm text-gray-600">Plaka: {province.plateCode}</div>
                     <div className="text-sm text-gray-600">{province.region} Bölgesi</div>
                     <div className="text-xs text-blue-600 mt-2 font-medium">
-                      {selectedProvince?.id === province.id && showDistricts 
-                        ? "Tıklayın → İlçeleri gizle"
+                      {selectedProvince 
+                        ? "Tıklayın → Ana haritaya dön"
                         : "Tıklayın → İlçeleri görün"
                       }
                     </div>
@@ -138,27 +138,25 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
               
               {/* İl Plaka Kodu */}
               <text
-                x={province.center.x}
-                y={province.center.y + 2}
+                x={selectedProvince ? 260 : province.center.x}
+                y={selectedProvince ? 162 : province.center.y + 2}
                 textAnchor="middle"
                 className="text-xs font-bold pointer-events-none"
                 fill="white"
-                style={{ fontSize: '7px' }}
+                style={{ fontSize: selectedProvince ? '12px' : '7px' }}
               >
                 {province.plateCode}
               </text>
               
               {/* İl İsmi */}
               <text
-                x={province.center.x}
-                y={province.center.y + 20}
+                x={selectedProvince ? 260 : province.center.x}
+                y={selectedProvince ? 190 : province.center.y + 20}
                 textAnchor="middle"
                 className={`text-xs font-semibold pointer-events-none transition-all duration-300`}
-                fill={
-                  selectedProvince?.id === province.id ? '#B45309' : '#374151'
-                }
+                fill={selectedProvince ? '#B45309' : '#374151'}
                 style={{
-                  fontSize: hoveredProvince === province.id ? '8px' : '7px',
+                  fontSize: selectedProvince ? '14px' : hoveredProvince === province.id ? '8px' : '7px',
                   filter: 'drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.8))'
                 }}
               >
@@ -167,73 +165,81 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             </g>
           ))}
 
-          {/* İlçeler */}
-          {showDistricts && selectedProvince && (
+          {/* İlçeler - sadece seçili il varsa göster */}
+          {selectedProvince && (
             <g className="animate-fade-in">
-              {selectedProvince.districts.map((district, index) => (
-                <g 
-                  key={district.id}
-                  className="animate-scale-in"
-                  style={{
-                    animationDelay: `${index * 0.05}s`,
-                    animationFillMode: 'both'
-                  }}
-                >
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <circle
-                        cx={district.center.x}
-                        cy={district.center.y}
-                        r="5"
-                        fill={
-                          hoveredDistrict === district.id 
-                            ? "#EC4899" 
-                            : "#F472B6"
-                        }
-                        stroke="#FFFFFF"
-                        strokeWidth="1"
-                        className="cursor-pointer transition-all duration-200"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDistrictClick(district, selectedProvince);
-                        }}
-                        onMouseEnter={() => setHoveredDistrict(district.id)}
-                        onMouseLeave={() => setHoveredDistrict(null)}
-                        style={{
-                          filter: hoveredDistrict === district.id ? 'url(#glow)' : 'url(#shadow)',
-                          transform: hoveredDistrict === district.id ? 'scale(1.2)' : 'scale(1)',
-                          transformOrigin: `${district.center.x}px ${district.center.y}px`,
-                          transition: 'all 0.2s ease'
-                        }}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="bg-white shadow-lg border border-gray-200">
-                      <div className="p-2">
-                        <div className="font-bold text-gray-800">{district.name}</div>
-                        <div className="text-sm text-gray-600">{selectedProvince.name} / {district.name}</div>
-                        <div className="text-xs text-pink-600 mt-1">Tıklayın → Seç</div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  {/* İlçe İsmi */}
-                  <text
-                    x={district.center.x}
-                    y={district.center.y + 12}
-                    textAnchor="middle"
-                    className={`text-xs font-medium pointer-events-none transition-all duration-200`}
-                    fill={
-                      hoveredDistrict === district.id ? '#BE185D' : '#BE185D'
-                    }
+              {selectedProvince.districts.map((district, index) => {
+                // İlçeleri seçili ilin etrafında dairesel olarak yerleştir
+                const angle = (index * 2 * Math.PI) / selectedProvince.districts.length;
+                const radius = 60 + (index % 3) * 20; // Farklı yarıçaplar için katmanlı yerleşim
+                const x = 260 + Math.cos(angle) * radius;
+                const y = 160 + Math.sin(angle) * radius;
+
+                return (
+                  <g 
+                    key={district.id}
+                    className="animate-scale-in"
                     style={{
-                      fontSize: hoveredDistrict === district.id ? '6px' : '5px',
-                      filter: 'drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.9))'
+                      animationDelay: `${index * 0.05}s`,
+                      animationFillMode: 'both'
                     }}
                   >
-                    {district.name}
-                  </text>
-                </g>
-              ))}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r="6"
+                          fill={
+                            hoveredDistrict === district.id 
+                              ? "#EC4899" 
+                              : "#F472B6"
+                          }
+                          stroke="#FFFFFF"
+                          strokeWidth="2"
+                          className="cursor-pointer transition-all duration-200"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDistrictClick(district, selectedProvince);
+                          }}
+                          onMouseEnter={() => setHoveredDistrict(district.id)}
+                          onMouseLeave={() => setHoveredDistrict(null)}
+                          style={{
+                            filter: hoveredDistrict === district.id ? 'url(#glow)' : 'url(#shadow)',
+                            transform: hoveredDistrict === district.id ? 'scale(1.3)' : 'scale(1)',
+                            transformOrigin: `${x}px ${y}px`,
+                            transition: 'all 0.2s ease'
+                          }}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-white shadow-lg border border-gray-200">
+                        <div className="p-2">
+                          <div className="font-bold text-gray-800">{district.name}</div>
+                          <div className="text-sm text-gray-600">{selectedProvince.name} / {district.name}</div>
+                          <div className="text-xs text-pink-600 mt-1">Tıklayın → Seç</div>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                    
+                    {/* İlçe İsmi */}
+                    <text
+                      x={x}
+                      y={y + 15}
+                      textAnchor="middle"
+                      className={`text-xs font-medium pointer-events-none transition-all duration-200`}
+                      fill={
+                        hoveredDistrict === district.id ? '#BE185D' : '#BE185D'
+                      }
+                      style={{
+                        fontSize: hoveredDistrict === district.id ? '8px' : '7px',
+                        filter: 'drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.9))'
+                      }}
+                    >
+                      {district.name}
+                    </text>
+                  </g>
+                );
+              })}
             </g>
           )}
         </svg>
@@ -246,9 +252,9 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
           <div className="flex flex-col space-y-2 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-blue-400 rounded-full border border-blue-600"></div>
-              <span className="text-gray-700">81 İl</span>
+              <span className="text-gray-700">{selectedProvince ? '1 İl' : '81 İl'}</span>
             </div>
-            {showDistricts && selectedProvince && (
+            {selectedProvince && (
               <div className="flex items-center space-y-1">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-pink-400 rounded-full border border-pink-600"></div>
@@ -258,8 +264,17 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             )}
             <div className="mt-3 pt-3 border-t border-gray-200">
               <div className="text-xs text-gray-600 space-y-1">
-                <div>📍 İl seçmek için tıklayın</div>
-                <div>🏘️ İlçeleri görmek için ile tıklayın</div>
+                {selectedProvince ? (
+                  <>
+                    <div>🏘️ İlçe seçmek için tıklayın</div>
+                    <div>↩️ Ana haritaya dönmek için ile tıklayın</div>
+                  </>
+                ) : (
+                  <>
+                    <div>📍 İl seçmek için tıklayın</div>
+                    <div>🏘️ İlçeleri görmek için ile tıklayın</div>
+                  </>
+                )}
                 <div>ℹ️ Detaylar için üzerine gelin</div>
               </div>
             </div>
@@ -283,75 +298,74 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({ selectedCity, onCitySelect
             </div>
             
             <div className="text-sm text-gray-700 mb-3">
-              <strong>{selectedProvince.districts.length}</strong> ilçe {showDistricts ? 'gösteriliyor' : 'mevcut'}
+              <strong>{selectedProvince.districts.length}</strong> ilçe gösteriliyor
             </div>
             
-            {showDistricts && (
-              <div className="flex flex-wrap gap-1 mb-4 max-h-20 overflow-y-auto">
-                {selectedProvince.districts.slice(0, 8).map((district) => (
-                  <span
-                    key={district.id}
-                    className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full hover:bg-pink-200 cursor-pointer transition-colors"
-                    onClick={() => handleDistrictClick(district, selectedProvince)}
-                  >
-                    {district.name}
-                  </span>
-                ))}
-                {selectedProvince.districts.length > 8 && (
-                  <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                    +{selectedProvince.districts.length - 8} daha
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="flex flex-wrap gap-1 mb-4 max-h-20 overflow-y-auto">
+              {selectedProvince.districts.slice(0, 8).map((district) => (
+                <span
+                  key={district.id}
+                  className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full hover:bg-pink-200 cursor-pointer transition-colors"
+                  onClick={() => handleDistrictClick(district, selectedProvince)}
+                >
+                  {district.name}
+                </span>
+              ))}
+              {selectedProvince.districts.length > 8 && (
+                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                  +{selectedProvince.districts.length - 8} daha
+                </span>
+              )}
+            </div>
             
             <button
               onClick={() => {
-                setShowDistricts(false);
                 setSelectedProvince(null);
                 setHoveredDistrict(null);
               }}
               className="w-full text-sm text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 hover:bg-blue-100 py-2 px-3 rounded-md font-medium"
             >
-              ✕ Seçimi Temizle
+              ↩️ Ana Haritaya Dön
             </button>
           </div>
         )}
 
-        {/* Bölge gösterge paneli */}
-        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
-          <div className="text-sm font-semibold text-gray-800 mb-2">Bölgeler</div>
-          <div className="space-y-1 text-xs">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3B82F6' }}></div>
-              <span>Marmara</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22C55E' }}></div>
-              <span>Ege</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FB923C' }}></div>
-              <span>Akdeniz</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EAB308' }}></div>
-              <span>İç Anadolu</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#14B8A6' }}></div>
-              <span>Karadeniz</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#A855F7' }}></div>
-              <span>Doğu Anadolu</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EF4444' }}></div>
-              <span>Güneydoğu Anadolu</span>
+        {/* Bölge gösterge paneli - sadece ana haritada göster */}
+        {!selectedProvince && (
+          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
+            <div className="text-sm font-semibold text-gray-800 mb-2">Bölgeler</div>
+            <div className="space-y-1 text-xs">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3B82F6' }}></div>
+                <span>Marmara</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22C55E' }}></div>
+                <span>Ege</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FB923C' }}></div>
+                <span>Akdeniz</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EAB308' }}></div>
+                <span>İç Anadolu</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#14B8A6' }}></div>
+                <span>Karadeniz</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#A855F7' }}></div>
+                <span>Doğu Anadolu</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EF4444' }}></div>
+                <span>Güneydoğu Anadolu</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </TooltipProvider>
   );
