@@ -11,7 +11,7 @@ interface TurkeyMapProps {
   onToggleCityVisited: (cityOrDistrict: string) => void;
 }
 
-// Bölge renklerini tanımlama
+// Bölge renklerini tanımlama - daha soft tonlar
 const getRegionColor = (region: string) => {
   const colors = {
     'Marmara': '#3B82F6',
@@ -50,12 +50,10 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
 
   const handleProvinceClick = (province: Province) => {
     if (selectedProvince?.id === province.id) {
-      // Aynı ile tekrar tıklanırsa haritayı normale döndür
       setSelectedProvince(null);
       setHoveredDistrict(null);
       onCitySelect(province.name);
     } else {
-      // Yeni il seçildi - sadece o ili göster
       setSelectedProvince(province);
       onCitySelect(province.name);
     }
@@ -85,14 +83,13 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
     onToggleCityVisited(`${district.name}, ${province.name}`);
   };
 
-  // Eğer bir il seçiliyse, sadece o ili ve ilçeleri göster
   const provincesToShow = selectedProvince ? [selectedProvince] : turkeyProvinces;
 
   return (
     <TooltipProvider>
       <div className="relative w-full h-[700px] bg-gradient-to-br from-blue-50 to-green-50 rounded-xl overflow-hidden border-2 border-gray-200">
         <svg
-          viewBox="0 0 1000 550"
+          viewBox="0 0 900 500"
           className="absolute inset-0 w-full h-full cursor-pointer"
           preserveAspectRatio="xMidYMid meet"
           onClick={handleMapClick}
@@ -109,7 +106,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
               </feMerge>
             </filter>
             <filter id="districtGlow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
               <feMerge> 
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
@@ -119,9 +116,64 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
               <rect width="4" height="4" fill="#10B981"/>
               <path d="M 0,4 l 4,-4 M -1,1 l 2,-2 M 3,5 l 2,-2" stroke="#065F46" strokeWidth="0.5"/>
             </pattern>
+            
+            {/* Türkiye ana hatları için gradient */}
+            <radialGradient id="turkeyGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#F8FAFC" stopOpacity="0.8"/>
+              <stop offset="100%" stopColor="#E2E8F0" stopOpacity="0.9"/>
+            </radialGradient>
           </defs>
 
-          {/* İller - Seçilen il varsa sadece o, yoksa tümü */}
+          {/* Türkiye ana hatları - gerçekçi şekil */}
+          {!selectedProvince && (
+            <g className="turkey-outline">
+              <path
+                d="M 100 200 
+                   L 120 180 L 180 170 L 250 180 L 320 175 L 380 170 L 450 175 L 520 180 L 580 175 L 650 180 L 720 185 L 780 190 L 820 200
+                   L 840 220 L 850 250 L 840 280 L 820 310 L 800 330 L 770 340 L 740 350 L 700 360 L 650 365 L 600 360 L 550 355 L 500 350
+                   L 450 345 L 400 340 L 350 335 L 300 330 L 250 325 L 200 320 L 150 310 L 120 300 L 100 280 L 90 250 L 95 220
+                   Z"
+                fill="url(#turkeyGradient)"
+                stroke="#CBD5E1"
+                strokeWidth="2"
+                className="pointer-events-none"
+                style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }}
+              />
+              
+              {/* İç Anadolu çukuru */}
+              <ellipse
+                cx="400"
+                cy="280"
+                rx="120"
+                ry="40"
+                fill="#F1F5F9"
+                opacity="0.7"
+                className="pointer-events-none"
+              />
+              
+              {/* Karadeniz kıyı çizgisi */}
+              <path
+                d="M 150 190 Q 300 180 450 185 Q 600 180 750 195"
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="2"
+                opacity="0.4"
+                className="pointer-events-none"
+              />
+              
+              {/* Akdeniz kıyı çizgisi */}
+              <path
+                d="M 200 350 Q 350 360 500 355 Q 650 350 750 345"
+                fill="none"
+                stroke="#22C55E"
+                strokeWidth="2"
+                opacity="0.4"
+                className="pointer-events-none"
+              />
+            </g>
+          )}
+
+          {/* İller */}
           {provincesToShow.map((province) => {
             const isVisited = visitedCities.has(province.name);
             
@@ -130,9 +182,9 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <circle
-                      cx={selectedProvince ? 500 : province.center.x + 60}
-                      cy={selectedProvince ? 275 : province.center.y + 20}
-                      r={selectedProvince ? "25" : (province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "15" : "12")}
+                      cx={selectedProvince ? 450 : province.center.x + 80}
+                      cy={selectedProvince ? 250 : province.center.y + 40}
+                      r={selectedProvince ? "30" : (province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "18" : "15")}
                       fill={
                         isVisited 
                           ? "url(#visitedPattern)"
@@ -140,11 +192,11 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                             ? "#FFD700" 
                             : hoveredProvince === province.id 
                               ? getRegionHoverColor(province.region)
-                              : getRegionColor(province.region)
+                              : "#9CA3AF" // Başlangıç rengi gri
                       }
-                      stroke={isVisited ? "#10B981" : "#FFFFFF"}
-                      strokeWidth={selectedProvince ? "5" : hoveredProvince === province.id ? "3" : "2"}
-                      className="cursor-pointer transition-all duration-500"
+                      stroke={isVisited ? "#10B981" : hoveredProvince === province.id ? "#FFFFFF" : "#6B7280"}
+                      strokeWidth={selectedProvince ? "6" : hoveredProvince === province.id ? "4" : "3"}
+                      className="cursor-pointer transition-all duration-700"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleProvinceClick(province);
@@ -153,10 +205,14 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                       onMouseEnter={() => setHoveredProvince(province.id)}
                       onMouseLeave={() => setHoveredProvince(null)}
                       style={{
-                        filter: selectedProvince ? 'url(#glow)' : 'url(#shadow)',
-                        transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                        transform: hoveredProvince === province.id ? 'scale(1.15) rotate(5deg)' : 'scale(1)',
-                        transformOrigin: `${selectedProvince ? 500 : province.center.x + 60}px ${selectedProvince ? 275 : province.center.y + 20}px`
+                        filter: selectedProvince || hoveredProvince === province.id ? 'url(#glow)' : 'url(#shadow)',
+                        transition: 'all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        transform: hoveredProvince === province.id 
+                          ? 'scale(1.2) rotate(10deg)' 
+                          : selectedProvince 
+                            ? 'scale(1)' 
+                            : 'scale(1)',
+                        transformOrigin: `${selectedProvince ? 450 : province.center.x + 80}px ${selectedProvince ? 250 : province.center.y + 40}px`
                       }}
                     />
                   </TooltipTrigger>
@@ -180,26 +236,29 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 
                 {/* İl Plaka Kodu */}
                 <text
-                  x={selectedProvince ? 500 : province.center.x + 60}
-                  y={selectedProvince ? 277 : province.center.y + 22}
+                  x={selectedProvince ? 450 : province.center.x + 80}
+                  y={selectedProvince ? 252 : province.center.y + 42}
                   textAnchor="middle"
                   className="text-xs font-bold pointer-events-none"
                   fill="white"
-                  style={{ fontSize: selectedProvince ? '14px' : '8px' }}
+                  style={{ 
+                    fontSize: selectedProvince ? '16px' : '10px',
+                    filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.7))'
+                  }}
                 >
                   {province.plateCode}
                 </text>
                 
                 {/* İl İsmi */}
                 <text
-                  x={selectedProvince ? 500 : province.center.x + 60}
-                  y={selectedProvince ? 310 : province.center.y + 45}
+                  x={selectedProvince ? 450 : province.center.x + 80}
+                  y={selectedProvince ? 290 : province.center.y + 65}
                   textAnchor="middle"
-                  className={`text-xs font-semibold pointer-events-none transition-all duration-500`}
+                  className={`text-xs font-semibold pointer-events-none transition-all duration-700`}
                   fill={selectedProvince ? '#B45309' : '#374151'}
                   style={{
-                    fontSize: selectedProvince ? '16px' : hoveredProvince === province.id ? '10px' : '9px',
-                    filter: 'drop-shadow(1px 1px 2px rgba(255, 255, 255, 0.8))'
+                    fontSize: selectedProvince ? '18px' : hoveredProvince === province.id ? '12px' : '11px',
+                    filter: 'drop-shadow(1px 1px 3px rgba(255, 255, 255, 0.9))'
                   }}
                 >
                   {province.name}
@@ -209,20 +268,21 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 {isVisited && !selectedProvince && (
                   <g className="pointer-events-none">
                     <circle
-                      cx={province.center.x + 75}
-                      cy={province.center.y + 5}
-                      r="6"
+                      cx={province.center.x + 95}
+                      cy={province.center.y + 25}
+                      r="8"
                       fill="#10B981"
                       stroke="#FFFFFF"
-                      strokeWidth="2"
+                      strokeWidth="3"
+                      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
                     />
                     <text
-                      x={province.center.x + 75}
-                      y={province.center.y + 7}
+                      x={province.center.x + 95}
+                      y={province.center.y + 28}
                       textAnchor="middle"
                       className="text-xs font-bold"
                       fill="white"
-                      style={{ fontSize: '8px' }}
+                      style={{ fontSize: '10px' }}
                     >
                       ✓
                     </text>
@@ -237,18 +297,17 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
             <g className="animate-fade-in">
               {selectedProvince.districts.map((district, index) => {
                 const isVisited = visitedCities.has(`${district.name}, ${selectedProvince.name}`);
-                // İlçeleri seçili ilin etrafında dairesel olarak yerleştir
                 const angle = (index * 2 * Math.PI) / selectedProvince.districts.length;
-                const radius = 120 + (index % 4) * 40; // Daha geniş yerleşim
-                const x = 500 + Math.cos(angle) * radius;
-                const y = 275 + Math.sin(angle) * radius;
+                const radius = 140 + (index % 3) * 50;
+                const x = 450 + Math.cos(angle) * radius;
+                const y = 250 + Math.sin(angle) * radius;
 
                 return (
                   <g 
                     key={district.id}
                     className="animate-scale-in"
                     style={{
-                      animationDelay: `${index * 0.08}s`,
+                      animationDelay: `${index * 0.1}s`,
                       animationFillMode: 'both'
                     }}
                   >
@@ -257,7 +316,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                         <circle
                           cx={x}
                           cy={y}
-                          r="10"
+                          r="12"
                           fill={
                             isVisited 
                               ? "url(#visitedPattern)"
@@ -266,8 +325,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                                 : "#F472B6"
                           }
                           stroke={isVisited ? "#10B981" : "#FFFFFF"}
-                          strokeWidth="3"
-                          className="cursor-pointer transition-all duration-700"
+                          strokeWidth="4"
+                          className="cursor-pointer transition-all duration-1000"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDistrictClick(district, selectedProvince);
@@ -277,9 +336,11 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                           onMouseLeave={() => setHoveredDistrict(null)}
                           style={{
                             filter: hoveredDistrict === district.id ? 'url(#districtGlow)' : 'url(#shadow)',
-                            transform: hoveredDistrict === district.id ? 'scale(2) rotate(720deg)' : 'scale(1)',
+                            transform: hoveredDistrict === district.id 
+                              ? 'scale(2.5) rotate(1080deg)' 
+                              : 'scale(1)',
                             transformOrigin: `${x}px ${y}px`,
-                            transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.675)'
+                            transition: 'all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.675)'
                           }}
                         />
                       </TooltipTrigger>
@@ -299,18 +360,18 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                     {/* İlçe İsmi */}
                     <text
                       x={x}
-                      y={y + 22}
+                      y={y + 26}
                       textAnchor="middle"
-                      className={`text-xs font-medium pointer-events-none transition-all duration-700`}
-                      fill={
-                        hoveredDistrict === district.id ? '#BE185D' : '#BE185D'
-                      }
+                      className={`text-xs font-medium pointer-events-none transition-all duration-1000`}
+                      fill={hoveredDistrict === district.id ? '#BE185D' : '#BE185D'}
                       style={{
-                        fontSize: hoveredDistrict === district.id ? '12px' : '9px',
-                        filter: 'drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.9))',
-                        transform: hoveredDistrict === district.id ? 'scale(1.4) translateY(-4px) rotate(5deg)' : 'scale(1)',
-                        transformOrigin: `${x}px ${y + 22}px`,
-                        transition: 'all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+                        fontSize: hoveredDistrict === district.id ? '14px' : '10px',
+                        filter: 'drop-shadow(1px 1px 2px rgba(255, 255, 255, 0.9))',
+                        transform: hoveredDistrict === district.id 
+                          ? 'scale(1.6) translateY(-6px) rotate(15deg)' 
+                          : 'scale(1)',
+                        transformOrigin: `${x}px ${y + 26}px`,
+                        transition: 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
                       }}
                     >
                       {district.name}
@@ -320,20 +381,21 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                     {isVisited && (
                       <g className="pointer-events-none">
                         <circle
-                          cx={x + 12}
-                          cy={y - 8}
-                          r="4"
+                          cx={x + 14}
+                          cy={y - 10}
+                          r="5"
                           fill="#10B981"
                           stroke="#FFFFFF"
-                          strokeWidth="1"
+                          strokeWidth="2"
+                          style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
                         />
                         <text
-                          x={x + 12}
-                          y={y - 6}
+                          x={x + 14}
+                          y={y - 7}
                           textAnchor="middle"
                           className="text-xs font-bold"
                           fill="white"
-                          style={{ fontSize: '6px' }}
+                          style={{ fontSize: '7px' }}
                         >
                           ✓
                         </text>
@@ -353,7 +415,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
           </div>
           <div className="flex flex-col space-y-2 text-sm">
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-blue-400 rounded-full border border-blue-600"></div>
+              <div className="w-4 h-4 bg-gray-400 rounded-full border border-gray-600"></div>
               <span className="text-gray-700">{selectedProvince ? '1 İl' : '81 İl'}</span>
             </div>
             {selectedProvince && (
@@ -438,7 +500,6 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
           </div>
         )}
 
-        {/* Bölge gösterge paneli - sadece ana haritada göster */}
         {!selectedProvince && (
           <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
             <div className="text-sm font-semibold text-gray-800 mb-2">Bölgeler</div>
@@ -470,6 +531,12 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EF4444' }}></div>
                 <span>Güneydoğu Anadolu</span>
+              </div>
+              <div className="mt-2 pt-2 border-t border-gray-200">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+                  <span className="text-gray-600">Ziyaret Edilmemiş</span>
+                </div>
               </div>
             </div>
           </div>
