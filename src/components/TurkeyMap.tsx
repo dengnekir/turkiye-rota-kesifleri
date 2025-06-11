@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { turkeyProvinces, Province, District } from '../data/turkeyMapData';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -127,8 +126,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <circle
-                      cx={selectedProvince ? 600 : (province.center.x * 1.8) + 120}
-                      cy={selectedProvince ? 300 : (province.center.y * 1.5) + 80}
+                      cx={selectedProvince ? 600 : (province.center.x * 4.4) + 100}
+                      cy={selectedProvince ? 300 : (province.center.y * 3.6) + 60}
                       r={selectedProvince ? "30" : (province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "18" : "15")}
                       fill={
                         isVisited 
@@ -136,7 +135,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                           : selectedProvince 
                             ? "#FFD700" 
                             : hoveredProvince === province.id 
-                              ? getRegionHoverColor(province.region)
+                              ? "#6B7280"
                               : "#9CA3AF"
                       }
                       stroke={isVisited ? "#10B981" : hoveredProvince === province.id ? "#FFFFFF" : "#6B7280"}
@@ -157,7 +156,7 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                           : selectedProvince 
                             ? 'scale(1)' 
                             : 'scale(1)',
-                        transformOrigin: `${selectedProvince ? 600 : (province.center.x * 1.8) + 120}px ${selectedProvince ? 300 : (province.center.y * 1.5) + 80}px`
+                        transformOrigin: `${selectedProvince ? 600 : (province.center.x * 4.4) + 100}px ${selectedProvince ? 300 : (province.center.y * 3.6) + 60}px`
                       }}
                     />
                   </TooltipTrigger>
@@ -181,8 +180,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 
                 {/* İl Plaka Kodu */}
                 <text
-                  x={selectedProvince ? 600 : (province.center.x * 1.8) + 120}
-                  y={selectedProvince ? 302 : (province.center.y * 1.5) + 82}
+                  x={selectedProvince ? 600 : (province.center.x * 4.4) + 100}
+                  y={selectedProvince ? 302 : (province.center.y * 3.6) + 62}
                   textAnchor="middle"
                   className="text-xs font-bold pointer-events-none"
                   fill="white"
@@ -196,8 +195,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 
                 {/* İl İsmi */}
                 <text
-                  x={selectedProvince ? 600 : (province.center.x * 1.8) + 120}
-                  y={selectedProvince ? 340 : (province.center.y * 1.5) + 105}
+                  x={selectedProvince ? 600 : (province.center.x * 4.4) + 100}
+                  y={selectedProvince ? 340 : (province.center.y * 3.6) + 85}
                   textAnchor="middle"
                   className={`text-xs font-semibold pointer-events-none transition-all duration-700`}
                   fill={selectedProvince ? '#B45309' : '#374151'}
@@ -213,8 +212,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                 {isVisited && !selectedProvince && (
                   <g className="pointer-events-none">
                     <circle
-                      cx={(province.center.x * 1.8) + 135}
-                      cy={(province.center.y * 1.5) + 65}
+                      cx={(province.center.x * 4.4) + 115}
+                      cy={(province.center.y * 3.6) + 45}
                       r="8"
                       fill="#10B981"
                       stroke="#FFFFFF"
@@ -222,8 +221,8 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                       style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
                     />
                     <text
-                      x={(province.center.x * 1.8) + 135}
-                      y={(province.center.y * 1.5) + 68}
+                      x={(province.center.x * 4.4) + 115}
+                      y={(province.center.y * 3.6) + 48}
                       textAnchor="middle"
                       className="text-xs font-bold"
                       fill="white"
