@@ -1,487 +1,434 @@
 import React, { useState } from 'react';
 import { turkeyProvinces, Province, District } from '../data/turkeyMapData';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { CheckCircle } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 interface TurkeyMapProps {
   selectedCity: string | null;
-  onCitySelect: (city: string) => void;
+  onCitySelect: (city: string | null) => void;
   visitedCities: Set<string>;
   onToggleCityVisited: (cityOrDistrict: string) => void;
 }
 
-// Bölge renklerini tanımlama - daha soft tonlar
-const getRegionColor = (region: string) => {
-  const colors = {
-    'Marmara': '#3B82F6',
-    'Ege': '#22C55E',
-    'Akdeniz': '#FB923C',
-    'İç Anadolu': '#EAB308',
-    'Karadeniz': '#14B8A6',
-    'Doğu Anadolu': '#A855F7',
-    'Güneydoğu Anadolu': '#EF4444'
-  };
-  return colors[region as keyof typeof colors] || '#9CA3AF';
-};
-
-const getRegionHoverColor = (region: string) => {
-  const colors = {
-    'Marmara': '#2563EB',
-    'Ege': '#16A34A',
-    'Akdeniz': '#EA580C',
-    'İç Anadolu': '#CA8A04',
-    'Karadeniz': '#0F766E',
-    'Doğu Anadolu': '#9333EA',
-    'Güneydoğu Anadolu': '#DC2626'
-  };
-  return colors[region as keyof typeof colors] || '#6B7280';
-};
-
-export const TurkeyMap: React.FC<TurkeyMapProps> = ({ 
-  selectedCity, 
-  onCitySelect, 
-  visitedCities, 
-  onToggleCityVisited 
+export const TurkeyMap: React.FC<TurkeyMapProps> = ({
+  selectedCity,
+  onCitySelect,
+  visitedCities,
+  onToggleCityVisited
 }) => {
-  const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [hoveredProvince, setHoveredProvince] = useState<string | null>(null);
-  const [hoveredDistrict, setHoveredDistrict] = useState<string | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
+
+  const getRegionColor = (region: string, isSelected: boolean = false) => {
+    if (isSelected) return '#FFD700';
+    
+    const colors = {
+      'Marmara': '#E0F2FE',
+      'Ege': '#DBEAFE', 
+      'Akdeniz': '#FEF3C7',
+      'İç Anadolu': '#F3E8FF',
+      'Karadeniz': '#D1FAE5',
+      'Doğu Anadolu': '#FEE2E2',
+      'Güneydoğu Anadolu': '#FECACA'
+    };
+    return colors[region as keyof typeof colors] || '#F3F4F6';
+  };
+
+  const getRegionHoverColor = (region: string) => {
+    const colors = {
+      'Marmara': '#0EA5E9',
+      'Ege': '#3B82F6',
+      'Akdeniz': '#F59E0B',
+      'İç Anadolu': '#8B5CF6',
+      'Karadeniz': '#10B981',
+      'Doğu Anadolu': '#EF4444',
+      'Güneydoğu Anadolu': '#F97316'
+    };
+    return colors[region as keyof typeof colors] || '#6B7280';
+  };
 
   const handleProvinceClick = (province: Province) => {
     if (selectedProvince?.id === province.id) {
       setSelectedProvince(null);
-      setHoveredDistrict(null);
-      onCitySelect(province.name);
+      onCitySelect(null);
     } else {
       setSelectedProvince(province);
       onCitySelect(province.name);
     }
   };
 
-  const handleDistrictClick = (district: District, province: Province) => {
-    console.log('İlçe seçildi:', district.name, 'İl:', province.name);
-    onCitySelect(`${district.name}, ${province.name}`);
+  const handleDistrictClick = (district: District) => {
+    onCitySelect(district.name);
   };
 
-  const handleMapClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setSelectedProvince(null);
-      setHoveredDistrict(null);
-    }
+  const handleToggleVisited = (cityOrDistrict: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    onToggleCityVisited(cityOrDistrict);
   };
-
-  const handleProvinceRightClick = (e: React.MouseEvent, province: Province) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onToggleCityVisited(province.name);
-  };
-
-  const handleDistrictRightClick = (e: React.MouseEvent, district: District, province: Province) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onToggleCityVisited(`${district.name}, ${province.name}`);
-  };
-
-  const provincesToShow = selectedProvince ? [selectedProvince] : turkeyProvinces;
 
   return (
     <TooltipProvider>
-      <div className="relative w-full h-[700px] bg-gradient-to-br from-blue-50 to-green-50 rounded-xl overflow-hidden border-2 border-gray-200">
-        <svg
-          viewBox="0 0 1200 600"
-          className="absolute inset-0 w-full h-full cursor-pointer"
-          preserveAspectRatio="xMidYMid meet"
-          onClick={handleMapClick}
-        >
-          <defs>
-            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.3"/>
-            </filter>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-              <feMerge> 
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            <filter id="districtGlow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge> 
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            <pattern id="visitedPattern" patternUnits="userSpaceOnUse" width="4" height="4">
-              <rect width="4" height="4" fill="#10B981"/>
-              <path d="M 0,4 l 4,-4 M -1,1 l 2,-2 M 3,5 l 2,-2" stroke="#065F46" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-
-          {/* İller */}
-          {provincesToShow.map((province) => {
-            const isVisited = visitedCities.has(province.name);
-            
-            return (
-              <g key={province.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <circle
-                      cx={selectedProvince ? 600 : (province.center.x * 4.4) + 100}
-                      cy={selectedProvince ? 300 : (province.center.y * 3.6) + 60}
-                      r={selectedProvince ? "30" : (province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "18" : "15")}
-                      fill={
-                        isVisited 
-                          ? "url(#visitedPattern)"
-                          : selectedProvince 
-                            ? "#FFD700" 
-                            : hoveredProvince === province.id 
-                              ? "#6B7280"
-                              : "#9CA3AF"
-                      }
-                      stroke={isVisited ? "#10B981" : hoveredProvince === province.id ? "#FFFFFF" : "#6B7280"}
-                      strokeWidth={selectedProvince ? "6" : hoveredProvince === province.id ? "4" : "3"}
-                      className="cursor-pointer transition-all duration-700"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleProvinceClick(province);
-                      }}
-                      onContextMenu={(e) => handleProvinceRightClick(e, province)}
-                      onMouseEnter={() => setHoveredProvince(province.id)}
-                      onMouseLeave={() => setHoveredProvince(null)}
-                      style={{
-                        filter: selectedProvince || hoveredProvince === province.id ? 'url(#glow)' : 'url(#shadow)',
-                        transition: 'all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                        transform: hoveredProvince === province.id 
-                          ? 'scale(1.2) rotate(10deg)' 
-                          : selectedProvince 
-                            ? 'scale(1)' 
-                            : 'scale(1)',
-                        transformOrigin: `${selectedProvince ? 600 : (province.center.x * 4.4) + 100}px ${selectedProvince ? 300 : (province.center.y * 3.6) + 60}px`
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-white shadow-lg border border-gray-200">
-                    <div className="p-3">
-                      <div className="font-bold text-gray-800 text-lg flex items-center">
-                        {province.name}
-                        {isVisited && <CheckCircle className="ml-2 h-4 w-4 text-green-500" />}
-                      </div>
-                      <div className="text-sm text-gray-600">Plaka: {province.plateCode}</div>
-                      <div className="text-sm text-gray-600">{province.region} Bölgesi</div>
-                      <div className="text-xs text-blue-600 mt-2 font-medium">
-                        Sol tık → {selectedProvince ? "Ana haritaya dön" : "İlçeleri görün"}
-                      </div>
-                      <div className="text-xs text-green-600 font-medium">
-                        Sağ tık → {isVisited ? "Ziyaret işaretini kaldır" : "Ziyaret edildi olarak işaretle"}
-                      </div>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-                
-                {/* İl Plaka Kodu */}
-                <text
-                  x={selectedProvince ? 600 : (province.center.x * 4.4) + 100}
-                  y={selectedProvince ? 302 : (province.center.y * 3.6) + 62}
-                  textAnchor="middle"
-                  className="text-xs font-bold pointer-events-none"
-                  fill="white"
-                  style={{ 
-                    fontSize: selectedProvince ? '16px' : '10px',
-                    filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.7))'
-                  }}
-                >
-                  {province.plateCode}
-                </text>
-                
-                {/* İl İsmi */}
-                <text
-                  x={selectedProvince ? 600 : (province.center.x * 4.4) + 100}
-                  y={selectedProvince ? 340 : (province.center.y * 3.6) + 85}
-                  textAnchor="middle"
-                  className={`text-xs font-semibold pointer-events-none transition-all duration-700`}
-                  fill={selectedProvince ? '#B45309' : '#374151'}
-                  style={{
-                    fontSize: selectedProvince ? '18px' : hoveredProvince === province.id ? '12px' : '11px',
-                    filter: 'drop-shadow(1px 1px 3px rgba(255, 255, 255, 0.9))'
-                  }}
-                >
-                  {province.name}
-                </text>
-
-                {/* Ziyaret edildi işareti */}
-                {isVisited && !selectedProvince && (
-                  <g className="pointer-events-none">
-                    <circle
-                      cx={(province.center.x * 4.4) + 115}
-                      cy={(province.center.y * 3.6) + 45}
-                      r="8"
-                      fill="#10B981"
-                      stroke="#FFFFFF"
-                      strokeWidth="3"
-                      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
-                    />
-                    <text
-                      x={(province.center.x * 4.4) + 115}
-                      y={(province.center.y * 3.6) + 48}
-                      textAnchor="middle"
-                      className="text-xs font-bold"
-                      fill="white"
-                      style={{ fontSize: '10px' }}
-                    >
-                      ✓
-                    </text>
-                  </g>
-                )}
-              </g>
-            );
-          })}
-
-          {/* İlçeler - sadece seçili il varsa göster */}
-          {selectedProvince && (
-            <g className="animate-fade-in">
-              {selectedProvince.districts.map((district, index) => {
-                const isVisited = visitedCities.has(`${district.name}, ${selectedProvince.name}`);
-                const angle = (index * 2 * Math.PI) / selectedProvince.districts.length;
-                const radius = 140 + (index % 3) * 50;
-                const x = 600 + Math.cos(angle) * radius;
-                const y = 300 + Math.sin(angle) * radius;
-
-                return (
-                  <g 
-                    key={district.id}
-                    className="animate-scale-in"
-                    style={{
-                      animationDelay: `${index * 0.1}s`,
-                      animationFillMode: 'both'
-                    }}
-                  >
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <circle
-                          cx={x}
-                          cy={y}
-                          r="12"
-                          fill={
-                            isVisited 
-                              ? "url(#visitedPattern)"
-                              : hoveredDistrict === district.id 
-                                ? "#EC4899" 
-                                : "#F472B6"
-                          }
-                          stroke={isVisited ? "#10B981" : "#FFFFFF"}
-                          strokeWidth="4"
-                          className="cursor-pointer transition-all duration-1000"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDistrictClick(district, selectedProvince);
-                          }}
-                          onContextMenu={(e) => handleDistrictRightClick(e, district, selectedProvince)}
-                          onMouseEnter={() => setHoveredDistrict(district.id)}
-                          onMouseLeave={() => setHoveredDistrict(null)}
-                          style={{
-                            filter: hoveredDistrict === district.id ? 'url(#districtGlow)' : 'url(#shadow)',
-                            transform: hoveredDistrict === district.id 
-                              ? 'scale(2.5) rotate(1080deg)' 
-                              : 'scale(1)',
-                            transformOrigin: `${x}px ${y}px`,
-                            transition: 'all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.675)'
-                          }}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="bg-white shadow-lg border border-gray-200">
-                        <div className="p-2">
-                          <div className="font-bold text-gray-800 flex items-center">
-                            {district.name}
-                            {isVisited && <CheckCircle className="ml-1 h-3 w-3 text-green-500" />}
-                          </div>
-                          <div className="text-sm text-gray-600">{selectedProvince.name} / {district.name}</div>
-                          <div className="text-xs text-pink-600 mt-1">Sol tık → Seç</div>
-                          <div className="text-xs text-green-600">Sağ tık → {isVisited ? "Ziyaret işaretini kaldır" : "Ziyaret edildi"}</div>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                    
-                    {/* İlçe İsmi */}
-                    <text
-                      x={x}
-                      y={y + 26}
-                      textAnchor="middle"
-                      className={`text-xs font-medium pointer-events-none transition-all duration-1000`}
-                      fill={hoveredDistrict === district.id ? '#BE185D' : '#BE185D'}
-                      style={{
-                        fontSize: hoveredDistrict === district.id ? '14px' : '10px',
-                        filter: 'drop-shadow(1px 1px 2px rgba(255, 255, 255, 0.9))',
-                        transform: hoveredDistrict === district.id 
-                          ? 'scale(1.6) translateY(-6px) rotate(15deg)' 
-                          : 'scale(1)',
-                        transformOrigin: `${x}px ${y + 26}px`,
-                        transition: 'all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
-                      }}
-                    >
-                      {district.name}
-                    </text>
-
-                    {/* Ziyaret edildi işareti */}
-                    {isVisited && (
-                      <g className="pointer-events-none">
-                        <circle
-                          cx={x + 14}
-                          cy={y - 10}
-                          r="5"
-                          fill="#10B981"
-                          stroke="#FFFFFF"
-                          strokeWidth="2"
-                          style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
-                        />
-                        <text
-                          x={x + 14}
-                          y={y - 7}
-                          textAnchor="middle"
-                          className="text-xs font-bold"
-                          fill="white"
-                          style={{ fontSize: '7px' }}
-                        >
-                          ✓
-                        </text>
-                      </g>
-                    )}
-                  </g>
-                );
-              })}
-            </g>
-          )}
-        </svg>
-
-        {/* Harita bilgi paneli */}
-        <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-200">
-          <div className="text-lg font-bold text-gray-800 mb-3 flex items-center">
-            🇹🇷 Türkiye Haritası
-          </div>
-          <div className="flex flex-col space-y-2 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-gray-400 rounded-full border border-gray-600"></div>
-              <span className="text-gray-700">{selectedProvince ? '1 İl' : '81 İl'}</span>
-            </div>
-            {selectedProvince && (
-              <div className="flex items-center space-y-1">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-pink-400 rounded-full border border-pink-600"></div>
-                  <span className="text-gray-700">{selectedProvince.districts.length} İlçe</span>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-green-400 rounded-full border border-green-600"></div>
-              <span className="text-gray-700">{visitedCities.size} Ziyaret Edildi</span>
-            </div>
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <div className="text-xs text-gray-600 space-y-1">
-                {selectedProvince ? (
-                  <>
-                    <div>📍 İlçe seçmek için sol tık</div>
-                    <div>✅ Ziyaret işareti için sağ tık</div>
-                    <div>↩️ Ana haritaya dönmek için ile tıklayın</div>
-                  </>
-                ) : (
-                  <>
-                    <div>📍 İl seçmek için sol tık</div>
-                    <div>✅ Ziyaret işareti için sağ tık</div>
-                    <div>🏘️ İlçeleri görmek için ile tıklayın</div>
-                  </>
-                )}
-                <div>ℹ️ Detaylar için üzerine gelin</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Seçili il detay bilgisi */}
-        {selectedProvince && (
-          <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-gray-200 animate-slide-in-right max-w-sm">
-            <div className="flex items-center space-x-3 mb-3">
-              <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg"
-                style={{ backgroundColor: getRegionColor(selectedProvince.region) }}
+      <div className="w-full">
+        {selectedProvince ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-gray-800">
+                {selectedProvince.name} - İlçeler
+              </h3>
+              <button
+                onClick={() => {
+                  setSelectedProvince(null);
+                  onCitySelect(null);
+                }}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                {selectedProvince.plateCode}
-              </div>
-              <div>
-                <div className="text-xl font-bold text-gray-800">{selectedProvince.name}</div>
-                <div className="text-sm text-gray-600">{selectedProvince.region} Bölgesi</div>
-              </div>
+                <X className="h-4 w-4" />
+                <span>Geri Dön</span>
+              </button>
             </div>
             
-            <div className="text-sm text-gray-700 mb-3">
-              <strong>{selectedProvince.districts.length}</strong> ilçe gösteriliyor
-            </div>
-            
-            <div className="flex flex-wrap gap-1 mb-4 max-h-20 overflow-y-auto">
-              {selectedProvince.districts.slice(0, 8).map((district) => (
-                <span
-                  key={district.id}
-                  className="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full hover:bg-pink-200 cursor-pointer transition-colors"
-                  onClick={() => handleDistrictClick(district, selectedProvince)}
+            <div className="bg-gray-50 rounded-xl p-6 overflow-x-auto">
+              <svg 
+                viewBox="0 0 1200 800" 
+                className="w-full max-w-4xl mx-auto"
+                style={{ minHeight: '400px' }}
+              >
+                {/* İl merkezi */}
+                <circle
+                  cx={600}
+                  cy={300}
+                  r="35"
+                  fill={visitedCities.has(selectedProvince.name) ? '#10B981' : '#6366F1'}
+                  stroke="#FFFFFF"
+                  strokeWidth="3"
+                  className="cursor-pointer hover:opacity-80 transition-all duration-300"
+                  onClick={(e) => handleToggleVisited(selectedProvince.name, e)}
+                  style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}
+                />
+                
+                <text
+                  x={600}
+                  y={305}
+                  textAnchor="middle"
+                  className="text-sm font-bold pointer-events-none"
+                  fill="white"
                 >
-                  {district.name}
-                </span>
-              ))}
-              {selectedProvince.districts.length > 8 && (
-                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                  +{selectedProvince.districts.length - 8} daha
-                </span>
-              )}
-            </div>
-            
-            <button
-              onClick={() => {
-                setSelectedProvince(null);
-                setHoveredDistrict(null);
-              }}
-              className="w-full text-sm text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 hover:bg-blue-100 py-2 px-3 rounded-md font-medium"
-            >
-              ↩️ Ana Haritaya Dön
-            </button>
-          </div>
-        )}
+                  {selectedProvince.plateCode}
+                </text>
+                
+                <text
+                  x={600}
+                  y={350}
+                  textAnchor="middle"
+                  className="text-lg font-bold pointer-events-none"
+                  fill="#1F2937"
+                >
+                  {selectedProvince.name} (Merkez)
+                </text>
 
-        {!selectedProvince && (
-          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-200">
-            <div className="text-sm font-semibold text-gray-800 mb-2">Bölgeler</div>
-            <div className="space-y-1 text-xs">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3B82F6' }}></div>
-                <span>Marmara</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22C55E' }}></div>
-                <span>Ege</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#FB923C' }}></div>
-                <span>Akdeniz</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EAB308' }}></div>
-                <span>İç Anadolu</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#14B8A6' }}></div>
-                <span>Karadeniz</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#A855F7' }}></div>
-                <span>Doğu Anadolu</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#EF4444' }}></div>
-                <span>Güneydoğu Anadolu</span>
-              </div>
-              <div className="mt-2 pt-2 border-t border-gray-200">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                  <span className="text-gray-600">Ziyaret Edilmemiş</span>
-                </div>
-              </div>
+                {/* İlçeler */}
+                {selectedProvince.districts.map((district, index) => {
+                  const angle = (index * (360 / selectedProvince.districts.length)) * (Math.PI / 180);
+                  const radius = 180;
+                  const x = 600 + Math.cos(angle) * radius;
+                  const y = 300 + Math.sin(angle) * radius;
+                  const isVisited = visitedCities.has(district.name);
+
+                  return (
+                    <g key={district.id}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <circle
+                            cx={x}
+                            cy={y}
+                            r="25"
+                            fill={isVisited ? '#10B981' : '#94A3B8'}
+                            stroke="#FFFFFF"
+                            strokeWidth="2"
+                            className="cursor-pointer hover:opacity-80 transition-all duration-300"
+                            onClick={() => handleDistrictClick(district)}
+                            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="font-medium">{district.name}</p>
+                          <p className="text-sm text-gray-600">
+                            {isVisited ? 'Ziyaret edildi' : 'Henüz ziyaret edilmedi'}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <text
+                        x={x}
+                        y={y + 35}
+                        textAnchor="middle"
+                        className="text-xs font-semibold pointer-events-none"
+                        fill="#374151"
+                      >
+                        {district.name.length > 10 ? district.name.substring(0, 8) + '...' : district.name}
+                      </text>
+
+                      {/* Ziyaret edildi işareti */}
+                      {isVisited && (
+                        <g className="pointer-events-none">
+                          <circle
+                            cx={x + 15}
+                            cy={y - 15}
+                            r="8"
+                            fill="#10B981"
+                            stroke="#FFFFFF"
+                            strokeWidth="2"
+                            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+                          />
+                          <text
+                            x={x + 15}
+                            y={y - 12}
+                            textAnchor="middle"
+                            className="text-xs font-bold"
+                            fill="white"
+                          >
+                            ✓
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Ziyaret durumu toggle butonu */}
+                      <circle
+                        cx={x - 15}
+                        cy={y - 15}
+                        r="10"
+                        fill={isVisited ? '#EF4444' : '#10B981'}
+                        stroke="#FFFFFF"
+                        strokeWidth="2"
+                        className="cursor-pointer hover:opacity-80 transition-all duration-300"
+                        onClick={(e) => handleToggleVisited(district.name, e)}
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+                      />
+                      <text
+                        x={x - 15}
+                        y={y - 11}
+                        textAnchor="middle"
+                        className="text-xs font-bold pointer-events-none"
+                        fill="white"
+                      >
+                        {isVisited ? '−' : '+'}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* Bağlantı çizgileri */}
+                {selectedProvince.districts.map((district, index) => {
+                  const angle = (index * (360 / selectedProvince.districts.length)) * (Math.PI / 180);
+                  const radius = 180;
+                  const x = 600 + Math.cos(angle) * radius;
+                  const y = 300 + Math.sin(angle) * radius;
+
+                  return (
+                    <line
+                      key={`line-${district.id}`}
+                      x1={600}
+                      y1={300}
+                      x2={x}
+                      y2={y}
+                      stroke="#E5E7EB"
+                      strokeWidth="1"
+                      strokeDasharray="4,4"
+                      className="pointer-events-none"
+                    />
+                  );
+                })}
+              </svg>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl p-6 overflow-auto">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Türkiye Haritası</h3>
+            <div className="overflow-auto" style={{ maxHeight: '600px' }}>
+              <svg 
+                viewBox="0 0 2000 1400" 
+                className="w-full"
+                style={{ minWidth: '1200px', minHeight: '800px' }}
+              >
+                {/* Arka plan */}
+                <rect width="2000" height="1400" fill="#F8FAFC" />
+                
+                {/* Türkiye ana hatları (basitleştirilmiş) */}
+                <g className="pointer-events-none opacity-20">
+                  {/* Marmara Bölgesi Kıyı Hatları */}
+                  <path
+                    d="M 200,300 Q 250,250 350,280 Q 450,290 500,320 Q 520,340 480,380 Q 420,400 350,390 Q 280,380 200,340 Z"
+                    fill="#E0F2FE"
+                    stroke="#0EA5E9"
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Ege Kıyı Hatları */}
+                  <path
+                    d="M 180,400 Q 200,450 220,500 Q 240,580 260,650 Q 280,720 300,780 Q 250,800 200,770 Q 150,740 120,680 Q 100,620 110,560 Q 130,480 180,400 Z"
+                    fill="#DBEAFE"
+                    stroke="#3B82F6"
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Akdeniz Kıyı Hatları */}
+                  <path
+                    d="M 300,780 Q 400,820 500,840 Q 650,860 800,850 Q 950,840 1100,820 Q 1200,800 1250,780 Q 1250,820 1200,850 Q 1100,880 950,890 Q 800,900 650,910 Q 500,920 350,900 Q 300,880 300,780 Z"
+                    fill="#FEF3C7"
+                    stroke="#F59E0B"
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Karadeniz Kıyı Hatları */}
+                  <path
+                    d="M 500,180 Q 650,160 800,170 Q 950,180 1100,190 Q 1250,200 1400,220 Q 1500,240 1550,260 Q 1550,300 1500,280 Q 1400,260 1250,250 Q 1100,240 950,230 Q 800,220 650,230 Q 500,240 500,180 Z"
+                    fill="#D1FAE5"
+                    stroke="#10B981"
+                    strokeWidth="2"
+                  />
+                  
+                  {/* İç Anadolu Platosu */}
+                  <ellipse
+                    cx="900"
+                    cy="500"
+                    rx="400"
+                    ry="200"
+                    fill="#F3E8FF"
+                    stroke="#8B5CF6"
+                    strokeWidth="2"
+                  />
+                </g>
+
+                {/* İller */}
+                {turkeyProvinces.map((province) => {
+                  const isVisited = visitedCities.has(province.name);
+                  
+                  return (
+                    <g key={province.id}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <circle
+                            cx={(province.center.x * 4.4) + 100}
+                            cy={(province.center.y * 3.6) + 60}
+                            r={province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? "18" : "15"}
+                            fill={
+                              isVisited 
+                                ? "#10B981" 
+                                : hoveredProvince === province.id 
+                                  ? "#6B7280"
+                                  : "#9CA3AF"
+                            }
+                            stroke={isVisited ? "#10B981" : hoveredProvince === province.id ? "#FFFFFF" : "#6B7280"}
+                            strokeWidth={isVisited ? "3" : "2"}
+                            className="cursor-pointer transition-all duration-300"
+                            onMouseEnter={() => setHoveredProvince(province.id)}
+                            onMouseLeave={() => setHoveredProvince(null)}
+                            onClick={() => handleProvinceClick(province)}
+                            style={{
+                              filter: isVisited 
+                                ? 'drop-shadow(0 4px 8px rgba(16, 185, 129, 0.4))' 
+                                : hoveredProvince === province.id 
+                                  ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' 
+                                  : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                              transform: hoveredProvince === province.id 
+                                ? 'scale(1.1)' 
+                                : 'scale(1)',
+                              transformOrigin: `${(province.center.x * 4.4) + 100}px ${(province.center.y * 3.6) + 60}px`
+                            }}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-center">
+                            <p className="font-semibold">{province.name}</p>
+                            <p className="text-sm text-gray-600">Plaka: {province.plateCode}</p>
+                            <p className="text-sm text-gray-600">Bölge: {province.region}</p>
+                            <p className="text-sm text-gray-600">{province.districts.length} ilçe</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {isVisited ? 'Ziyaret edildi ✓' : 'Henüz ziyaret edilmedi'}
+                            </p>
+                            <p className="text-xs text-blue-600 mt-1">Detaylar için tıklayın</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                      
+                      {/* İl Plaka Kodu */}
+                      <text
+                        x={(province.center.x * 4.4) + 100}
+                        y={(province.center.y * 3.6) + 62}
+                        textAnchor="middle"
+                        className="text-xs font-bold pointer-events-none"
+                        fill="white"
+                        style={{
+                          textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                          fontSize: province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? '11px' : '10px'
+                        }}
+                      >
+                        {province.plateCode}
+                      </text>
+                      
+                      {/* İl İsmi */}
+                      <text
+                        x={(province.center.x * 4.4) + 100}
+                        y={(province.center.y * 3.6) + 85}
+                        textAnchor="middle"
+                        className={`text-xs font-semibold pointer-events-none transition-all duration-700`}
+                        fill={'#374151'}
+                        style={{
+                          fontSize: province.name === 'İstanbul' || province.name === 'Ankara' || province.name === 'İzmir' ? '12px' : '10px'
+                        }}
+                      >
+                        {province.name.length > 8 ? province.name.substring(0, 6) + '...' : province.name}
+                      </text>
+
+                      {/* Ziyaret edildi işareti */}
+                      {isVisited && (
+                        <g className="pointer-events-none">
+                          <circle
+                            cx={(province.center.x * 4.4) + 115}
+                            cy={(province.center.y * 3.6) + 45}
+                            r="8"
+                            fill="#10B981"
+                            stroke="#FFFFFF"
+                            strokeWidth="2"
+                            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+                          />
+                          <text
+                            x={(province.center.x * 4.4) + 115}
+                            y={(province.center.y * 3.6) + 48}
+                            textAnchor="middle"
+                            className="text-xs font-bold"
+                            fill="white"
+                          >
+                            ✓
+                          </text>
+                        </g>
+                      )}
+
+                      {/* Ziyaret durumu toggle butonu */}
+                      <circle
+                        cx={(province.center.x * 4.4) + 85}
+                        cy={(province.center.y * 3.6) + 45}
+                        r="8"
+                        fill={isVisited ? '#EF4444' : '#10B981'}
+                        stroke="#FFFFFF"
+                        strokeWidth="2"
+                        className="cursor-pointer hover:opacity-80 transition-all duration-300"
+                        onClick={(e) => handleToggleVisited(province.name, e)}
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+                      />
+                      <text
+                        x={(province.center.x * 4.4) + 85}
+                        y={(province.center.y * 3.6) + 48}
+                        textAnchor="middle"
+                        className="text-xs font-bold pointer-events-none"
+                        fill="white"
+                      >
+                        {isVisited ? '−' : '+'}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
             </div>
           </div>
         )}
