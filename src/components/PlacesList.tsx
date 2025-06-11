@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { MapPin, Star, Heart, Camera, Clock, Users } from 'lucide-react';
+import { MapPin, Star, Heart, Camera, Clock, Users, CheckCircle } from 'lucide-react';
 
 interface Place {
   id: string;
@@ -13,15 +12,274 @@ interface Place {
   tags: string[];
   historicalPeriod?: string;
   visitDuration?: string;
+  visited?: boolean;
 }
 
 interface PlacesListProps {
   selectedCity: string | null;
   searchQuery: string;
   onCitySelect: (city: string) => void;
+  visitedPlaces: Set<string>;
+  onToggleVisited: (placeId: string) => void;
 }
 
 const mockPlaces: Place[] = [
+  // Batman Merkez İlçesi
+  {
+    id: 'batman-merkez-1',
+    name: 'Batman Kalesi',
+    city: 'Batman',
+    district: 'Merkez',
+    rating: 4.3,
+    image: '/placeholder.svg',
+    description: 'Tarihi Batman Kalesi, şehrin simgesi',
+    tags: ['Tarihi', 'Kale', 'Manzara'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '1-2 saat'
+  },
+  {
+    id: 'batman-merkez-2',
+    name: 'Batman Ulu Camii',
+    city: 'Batman',
+    district: 'Merkez',
+    rating: 4.1,
+    image: '/placeholder.svg',
+    description: 'Şehrin merkez camisi',
+    tags: ['Tarihi', 'Cami', 'İslami'],
+    historicalPeriod: 'Modern',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'batman-merkez-3',
+    name: 'Batman Müzesi',
+    city: 'Batman',
+    district: 'Merkez',
+    rating: 4.2,
+    image: '/placeholder.svg',
+    description: 'Bölgesel tarih ve kültür müzesi',
+    tags: ['Müze', 'Kültür', 'Tarihi'],
+    historicalPeriod: 'Modern',
+    visitDuration: '1-2 saat'
+  },
+  {
+    id: 'batman-merkez-4',
+    name: 'Batman Çayı Mesire Alanı',
+    city: 'Batman',
+    district: 'Merkez',
+    rating: 4.0,
+    image: '/placeholder.svg',
+    description: 'Doğa ve piknik alanı',
+    tags: ['Doğa', 'Piknik', 'Aile'],
+    visitDuration: '2-4 saat'
+  },
+  {
+    id: 'batman-merkez-5',
+    name: 'Petrol Rafinerisi Müzesi',
+    city: 'Batman',
+    district: 'Merkez',
+    rating: 3.9,
+    image: '/placeholder.svg',
+    description: 'Batman\'ın petrol tarihini anlatan müze',
+    tags: ['Müze', 'Endüstri', 'Tarih'],
+    visitDuration: '1 saat'
+  },
+
+  // Batman Kozluk İlçesi
+  {
+    id: 'batman-kozluk-1',
+    name: 'Hasankeyf-Batman Barajı',
+    city: 'Batman',
+    district: 'Kozluk',
+    rating: 4.5,
+    image: '/placeholder.svg',
+    description: 'Büyük baraj ve su sporları',
+    tags: ['Doğa', 'Baraj', 'Su Sporları'],
+    visitDuration: '2-3 saat'
+  },
+  {
+    id: 'batman-kozluk-2',
+    name: 'Kozluk Eski Evleri',
+    city: 'Batman',
+    district: 'Kozluk',
+    rating: 4.0,
+    image: '/placeholder.svg',
+    description: 'Geleneksel taş mimari',
+    tags: ['Tarihi', 'Mimari', 'Geleneksel'],
+    historicalPeriod: 'Osmanlı',
+    visitDuration: '1 saat'
+  },
+  {
+    id: 'batman-kozluk-3',
+    name: 'Dicle Nehri Kıyısı',
+    city: 'Batman',
+    district: 'Kozluk',
+    rating: 4.2,
+    image: '/placeholder.svg',
+    description: 'Nehir kenarında yürüyüş',
+    tags: ['Doğa', 'Nehir', 'Yürüyüş'],
+    visitDuration: '1-2 saat'
+  },
+
+  // Batman Beşiri İlçesi
+  {
+    id: 'batman-besiri-1',
+    name: 'Beşiri Kalesi',
+    city: 'Batman',
+    district: 'Beşiri',
+    rating: 4.1,
+    image: '/placeholder.svg',
+    description: 'Tarihi kale kalıntıları',
+    tags: ['Tarihi', 'Kale', 'Antik'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '1 saat'
+  },
+  {
+    id: 'batman-besiri-2',
+    name: 'Beşiri Camii',
+    city: 'Batman',
+    district: 'Beşiri',
+    rating: 3.8,
+    image: '/placeholder.svg',
+    description: 'Yerel mimari örneği',
+    tags: ['Tarihi', 'Cami', 'Yerel'],
+    historicalPeriod: 'Osmanlı',
+    visitDuration: '30 dakika'
+  },
+
+  // Batman Gercüş İlçesi
+  {
+    id: 'batman-gercus-1',
+    name: 'Gercüş Köprüsü',
+    city: 'Batman',
+    district: 'Gercüş',
+    rating: 4.0,
+    image: '/placeholder.svg',
+    description: 'Tarihi taş köprü',
+    tags: ['Tarihi', 'Köprü', 'Mimari'],
+    historicalPeriod: 'Osmanlı',
+    visitDuration: '30 dakika'
+  },
+  {
+    id: 'batman-gercus-2',
+    name: 'Gercüş Eski Mahalle',
+    city: 'Batman',
+    district: 'Gercüş',
+    rating: 3.9,
+    image: '/placeholder.svg',
+    description: 'Geleneksel sokaklar',
+    tags: ['Tarihi', 'Mahalle', 'Geleneksel'],
+    visitDuration: '1 saat'
+  },
+
+  // Batman Hasankeyf İlçesi
+  {
+    id: 'batman-hasankeyf-1',
+    name: 'Hasankeyf Antik Kenti',
+    city: 'Batman',
+    district: 'Hasankeyf',
+    rating: 4.8,
+    image: '/placeholder.svg',
+    description: 'UNESCO Dünya Mirası, bin yıllık tarihi kent',
+    tags: ['Antik', 'UNESCO', 'Tarihi'],
+    historicalPeriod: 'Çok Dönemli',
+    visitDuration: '4-6 saat'
+  },
+  {
+    id: 'batman-hasankeyf-2',
+    name: 'Zeynel Bey Türbesi',
+    city: 'Batman',
+    district: 'Hasankeyf',
+    rating: 4.6,
+    image: '/placeholder.svg',
+    description: 'Akkoyunlu döneminden türbe',
+    tags: ['Tarihi', 'Türbe', 'Akkoyunlu'],
+    historicalPeriod: '15. yüzyıl',
+    visitDuration: '45 dakika'
+  },
+  {
+    id: 'batman-hasankeyf-3',
+    name: 'Artuklu Sarayı',
+    city: 'Batman',
+    district: 'Hasankeyf',
+    rating: 4.5,
+    image: '/placeholder.svg',
+    description: 'Artuklu döneminden saray kalıntıları',
+    tags: ['Tarihi', 'Saray', 'Artuklu'],
+    historicalPeriod: 'Artuklu Dönemi',
+    visitDuration: '1-2 saat'
+  },
+  {
+    id: 'batman-hasankeyf-4',
+    name: 'Hasankeyf Kalesi',
+    city: 'Batman',
+    district: 'Hasankeyf',
+    rating: 4.7,
+    image: '/placeholder.svg',
+    description: 'Kaya üzerine kurulmuş tarihi kale',
+    tags: ['Tarihi', 'Kale', 'Manzara'],
+    historicalPeriod: 'Çok Dönemli',
+    visitDuration: '2-3 saat'
+  },
+  {
+    id: 'batman-hasankeyf-5',
+    name: 'Ulu Camii (Hasankeyf)',
+    city: 'Batman',
+    district: 'Hasankeyf',
+    rating: 4.4,
+    image: '/placeholder.svg',
+    description: 'Eyyubi döneminden camii',
+    tags: ['Tarihi', 'Cami', 'Eyyubi'],
+    historicalPeriod: 'Eyyubi Dönemi',
+    visitDuration: '45 dakika'
+  },
+  {
+    id: 'batman-hasankeyf-6',
+    name: 'Hasankeyf Müzesi',
+    city: 'Batman',
+    district: 'Hasankeyf',
+    rating: 4.3,
+    image: '/placeholder.svg',
+    description: 'Bölge tarihini anlatan müze',
+    tags: ['Müze', 'Tarihi', 'Kültür'],
+    visitDuration: '1-2 saat'
+  },
+
+  // Batman Sason İlçesi
+  {
+    id: 'batman-sason-1',
+    name: 'Sason Yaylası',
+    city: 'Batman',
+    district: 'Sason',
+    rating: 4.4,
+    image: '/placeholder.svg',
+    description: 'Doğal yayla ve kamp alanı',
+    tags: ['Doğa', 'Yayla', 'Kamp'],
+    visitDuration: '1 gün'
+  },
+  {
+    id: 'batman-sason-2',
+    name: 'Sason Kalesi',
+    city: 'Batman',
+    district: 'Sason',
+    rating: 4.0,
+    image: '/placeholder.svg',
+    description: 'Dağ yamacındaki tarihi kale',
+    tags: ['Tarihi', 'Kale', 'Dağ'],
+    historicalPeriod: 'Ortaçağ',
+    visitDuration: '1-2 saat'
+  },
+  {
+    id: 'batman-sason-3',
+    name: 'Sason Çayları',
+    city: 'Batman',
+    district: 'Sason',
+    rating: 4.2,
+    image: '/placeholder.svg',
+    description: 'Doğal akarsu ve piknik alanları',
+    tags: ['Doğa', 'Çay', 'Piknik'],
+    visitDuration: '2-3 saat'
+  },
+
   // Mardin Artuklu İlçesi
   {
     id: 'mardin-artuklu-1',
@@ -461,7 +719,13 @@ const mockPlaces: Place[] = [
   }
 ];
 
-export const PlacesList: React.FC<PlacesListProps> = ({ selectedCity, searchQuery, onCitySelect }) => {
+export const PlacesList: React.FC<PlacesListProps> = ({ 
+  selectedCity, 
+  searchQuery, 
+  onCitySelect, 
+  visitedPlaces, 
+  onToggleVisited 
+}) => {
   const filteredPlaces = mockPlaces.filter(place => {
     const matchesCity = !selectedCity || 
       place.city === selectedCity || 
@@ -475,6 +739,27 @@ export const PlacesList: React.FC<PlacesListProps> = ({ selectedCity, searchQuer
     
     return matchesCity && matchesSearch;
   });
+
+  const getThemeColor = (city: string) => {
+    if (city === 'Mardin') {
+      return {
+        primary: 'bg-amber-100 text-amber-700 hover:bg-amber-200',
+        star: 'text-amber-500',
+        accent: 'text-amber-600'
+      };
+    } else if (city === 'Batman') {
+      return {
+        primary: 'bg-purple-100 text-purple-700 hover:bg-purple-200',
+        star: 'text-purple-500',
+        accent: 'text-purple-600'
+      };
+    }
+    return {
+      primary: 'bg-blue-100 text-blue-700 hover:bg-blue-200',
+      star: 'text-blue-500',
+      accent: 'text-blue-600'
+    };
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 h-fit">
@@ -497,86 +782,105 @@ export const PlacesList: React.FC<PlacesListProps> = ({ selectedCity, searchQuer
           {selectedCity?.includes('Mardin') && (
             <span className="text-amber-600 ml-2">✨ Tarihi Hazineler</span>
           )}
+          {selectedCity?.includes('Batman') && (
+            <span className="text-purple-600 ml-2">🏛️ Antik Kent</span>
+          )}
         </p>
       </div>
 
       <div className="max-h-96 overflow-y-auto">
-        {filteredPlaces.map((place) => (
-          <div
-            key={place.id}
-            className="p-4 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:shadow-md"
-            onClick={() => onCitySelect(place.city)}
-          >
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0">
-                <img
-                  src={place.image}
-                  alt={place.name}
-                  className="w-16 h-16 rounded-lg object-cover bg-gray-200 transition-transform duration-300 hover:scale-110"
-                />
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-gray-800 truncate flex items-center">
-                  {place.name}
-                  {place.city === 'Mardin' && <span className="ml-2 text-amber-500">⭐</span>}
-                </h3>
-                
-                <div className="flex items-center text-sm text-gray-600 mt-1">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  <span>{place.district}, {place.city}</span>
+        {filteredPlaces.map((place) => {
+          const themeColors = getThemeColor(place.city);
+          const isVisited = visitedPlaces.has(place.id);
+          
+          return (
+            <div
+              key={place.id}
+              className={`p-4 border-b border-gray-50 last:border-b-0 hover:bg-gray-50 transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:shadow-md ${
+                isVisited ? 'bg-green-50 border-green-200' : ''
+              }`}
+              onClick={() => onCitySelect(place.city)}
+            >
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <img
+                    src={place.image}
+                    alt={place.name}
+                    className="w-16 h-16 rounded-lg object-cover bg-gray-200 transition-transform duration-300 hover:scale-110"
+                  />
                 </div>
                 
-                <div className="flex items-center mt-1 space-x-3">
-                  <div className="flex items-center">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm text-gray-600 ml-1">{place.rating}</span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-800 truncate flex items-center">
+                    {place.name}
+                    {place.city === 'Mardin' && <span className="ml-2 text-amber-500">⭐</span>}
+                    {place.city === 'Batman' && <span className="ml-2 text-purple-500">🏛️</span>}
+                    {isVisited && <span className="ml-2 text-green-500">✅</span>}
+                  </h3>
+                  
+                  <div className="flex items-center text-sm text-gray-600 mt-1">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    <span>{place.district}, {place.city}</span>
                   </div>
-                  {place.historicalPeriod && (
-                    <div className="flex items-center text-xs text-amber-600">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>{place.historicalPeriod}</span>
+                  
+                  <div className="flex items-center mt-1 space-x-3">
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="text-sm text-gray-600 ml-1">{place.rating}</span>
                     </div>
-                  )}
-                  {place.visitDuration && (
-                    <div className="flex items-center text-xs text-blue-600">
-                      <Users className="h-3 w-3 mr-1" />
-                      <span>{place.visitDuration}</span>
-                    </div>
-                  )}
+                    {place.historicalPeriod && (
+                      <div className={`flex items-center text-xs ${themeColors.accent}`}>
+                        <Clock className="h-3 w-3 mr-1" />
+                        <span>{place.historicalPeriod}</span>
+                      </div>
+                    )}
+                    {place.visitDuration && (
+                      <div className="flex items-center text-xs text-blue-600">
+                        <Users className="h-3 w-3 mr-1" />
+                        <span>{place.visitDuration}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                    {place.description}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {place.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className={`px-2 py-1 text-xs rounded-full transition-colors duration-200 ${themeColors.primary}`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                  {place.description}
-                </p>
-                
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {place.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className={`px-2 py-1 text-xs rounded-full transition-colors duration-200 ${
-                        place.city === 'Mardin' 
-                          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' 
-                          : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                <div className="flex flex-col space-y-2">
+                  <button 
+                    className={`p-1 transition-all duration-200 hover:scale-110 ${
+                      isVisited ? 'text-green-500' : 'text-gray-400 hover:text-green-500'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleVisited(place.id);
+                    }}
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                  </button>
+                  <button className="p-1 text-gray-400 hover:text-red-500 transition-all duration-200 hover:scale-110">
+                    <Heart className="h-4 w-4" />
+                  </button>
+                  <button className="p-1 text-gray-400 hover:text-blue-500 transition-all duration-200 hover:scale-110">
+                    <Camera className="h-4 w-4" />
+                  </button>
                 </div>
-              </div>
-              
-              <div className="flex flex-col space-y-2">
-                <button className="p-1 text-gray-400 hover:text-red-500 transition-all duration-200 hover:scale-110">
-                  <Heart className="h-4 w-4" />
-                </button>
-                <button className="p-1 text-gray-400 hover:text-blue-500 transition-all duration-200 hover:scale-110">
-                  <Camera className="h-4 w-4" />
-                </button>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {filteredPlaces.length === 0 && (
