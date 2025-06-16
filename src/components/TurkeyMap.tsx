@@ -77,14 +77,20 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
     onToggleCityVisited(`${district.name}, ${province.name}`);
   };
 
-  // İlleri dairesel düzenleme için pozisyon hesaplama - daha geniş daire
+  // İlleri spiralde yerleştirme fonksiyonu - içi dolu daire
   const getProvincePosition = (index: number, total: number) => {
-    const radius = 280; // Daha büyük yarıçap
-    const angle = (2 * Math.PI * index) / total - Math.PI / 2; // -90 derece başlangıç (üstten)
     const centerX = 350;
     const centerY = 350;
-    const x = radius * Math.cos(angle) + centerX;
-    const y = radius * Math.sin(angle) + centerY;
+    
+    // Spiral parametreleri
+    const maxRadius = 280;
+    const turns = 4; // Spiral tur sayısı
+    const t = (index / total) * turns * 2 * Math.PI;
+    const radius = (index / total) * maxRadius;
+    
+    const x = radius * Math.cos(t) + centerX;
+    const y = radius * Math.sin(t) + centerY;
+    
     return { x, y };
   };
 
@@ -93,23 +99,19 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
       <div className="relative w-full h-[700px] bg-gradient-to-br from-blue-50 via-sky-50 to-emerald-50 rounded-xl border-2 border-gray-200 overflow-hidden">
         <ScrollArea className="w-full h-full">
           <div className="relative min-w-[700px] min-h-[700px] p-4">
-            {/* Ana Türkiye Haritası - Dairesel Görünüm */}
+            {/* Ana Türkiye Haritası - Spiral Görünüm */}
             {!selectedProvince && (
               <div className="relative w-full h-full flex items-center justify-center">
                 <div className="relative w-[700px] h-[700px]">
-                  {/* Merkez Türkiye Logosu - Daha büyük ve dikkat çekici */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                    <div className="w-40 h-40 bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-full flex flex-col items-center justify-center shadow-2xl border-4 border-white relative">
-                      <div className="text-white font-bold text-5xl mb-2 animate-pulse">🇹🇷</div>
-                      <div className="text-white font-semibold text-lg">TÜRKİYE</div>
-                      <div className="text-white/90 text-sm">81 İL</div>
-                      {/* Merkez etrafında dönen halka efekti */}
-                      <div className="absolute inset-0 rounded-full border-2 border-white/30 animate-spin" style={{ animationDuration: '10s' }}></div>
-                      <div className="absolute inset-2 rounded-full border-2 border-white/20 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }}></div>
+                  {/* Merkez Türkiye Logosu */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+                    <div className="w-24 h-24 bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-full flex flex-col items-center justify-center shadow-xl border-3 border-white">
+                      <div className="text-white font-bold text-2xl">🇹🇷</div>
+                      <div className="text-white font-semibold text-xs">TÜRKİYE</div>
                     </div>
                   </div>
                   
-                  {/* Dairesel olarak yerleştirilmiş iller - Tümü görünür */}
+                  {/* Spiral şeklinde yerleştirilmiş iller */}
                   {turkeyProvinces.map((province, index) => {
                     const isVisited = visitedCities.has(province.name);
                     const position = getProvincePosition(index, turkeyProvinces.length);
@@ -121,14 +123,14 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                         style={{
                           left: `${position.x}px`,
                           top: `${position.y}px`,
-                          animationDelay: `${index * 0.03}s`
+                          animationDelay: `${index * 0.02}s`
                         }}
                       >
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="relative group">
                               <div
-                                className="w-14 h-14 rounded-xl cursor-pointer transition-all duration-500 flex flex-col items-center justify-center shadow-lg hover:shadow-2xl transform hover:scale-125 hover:z-30 group-hover:rotate-6 border-2"
+                                className="w-12 h-12 rounded-lg cursor-pointer transition-all duration-300 flex flex-col items-center justify-center shadow-md hover:shadow-xl transform hover:scale-110 hover:z-30 border-2"
                                 style={{
                                   backgroundColor: isVisited 
                                     ? '#10B981'
@@ -146,37 +148,22 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                                 onMouseLeave={() => setHoveredProvince(null)}
                               >
                                 {/* Plaka Kodu */}
-                                <div className="text-white font-bold text-xs mb-1">
+                                <div className="text-white font-bold text-xs">
                                   {province.plateCode}
                                 </div>
                                 
-                                {/* İl adının ilk 3 harfi */}
-                                <div className="text-white font-semibold text-xs leading-none text-center">
-                                  {province.name.slice(0, 3).toUpperCase()}
+                                {/* İl adının ilk 2 harfi */}
+                                <div className="text-white font-semibold text-xs leading-none">
+                                  {province.name.slice(0, 2).toUpperCase()}
                                 </div>
                                 
                                 {/* Ziyaret edildi işareti */}
                                 {isVisited && (
-                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center border-2 border-white animate-bounce">
-                                    <CheckCircle className="w-2 h-2 text-white" />
+                                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                                    <CheckCircle className="w-1.5 h-1.5 text-white" />
                                   </div>
                                 )}
-                                
-                                {/* Hover efekti */}
-                                <div className="absolute inset-0 rounded-xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                               </div>
-                              
-                              {/* Bağlantı çizgisi merkeze */}
-                              <div 
-                                className="absolute w-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-30 group-hover:opacity-60 transition-opacity duration-300"
-                                style={{
-                                  height: `${Math.sqrt(Math.pow(position.x - 350, 2) + Math.pow(position.y - 350, 2)) - 70}px`,
-                                  transformOrigin: 'bottom center',
-                                  transform: `rotate(${Math.atan2(350 - position.y, 350 - position.x) * 180 / Math.PI + 90}deg)`,
-                                  left: '50%',
-                                  top: '100%'
-                                }}
-                              ></div>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="bg-white shadow-lg border border-gray-200 max-w-xs">
@@ -200,6 +187,24 @@ export const TurkeyMap: React.FC<TurkeyMapProps> = ({
                       </div>
                     );
                   })}
+                  
+                  {/* Arka plan daire çizgileri */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                    {[100, 150, 200, 250, 300].map((radius, index) => (
+                      <div
+                        key={radius}
+                        className="absolute border border-gray-200/30 rounded-full animate-pulse"
+                        style={{
+                          width: `${radius * 2}px`,
+                          height: `${radius * 2}px`,
+                          left: `-${radius}px`,
+                          top: `-${radius}px`,
+                          animationDelay: `${index * 0.5}s`,
+                          animationDuration: '3s'
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
