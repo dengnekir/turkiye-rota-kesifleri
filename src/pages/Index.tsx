@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { TurkeyMap } from '../components/TurkeyMap';
+import { TurkeyVectorMap } from '../components/TurkeyVectorMap';
 import { PlacesList } from '../components/PlacesList';
 import { Header } from '../components/Header';
 import { SearchBar } from '../components/SearchBar';
@@ -50,8 +50,8 @@ const Index = () => {
         <div className="grid lg:grid-cols-3 gap-8 mt-8">
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Türkiye Haritası</h2>
-              <TurkeyMap 
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Vektör Harita</h2>
+              <TurkeyVectorMap 
                 selectedCity={selectedCity} 
                 onCitySelect={setSelectedCity}
                 visitedCities={visitedCities}
